@@ -19,4 +19,3 @@ Route::get('/', function () {
 });
 
 Route::get('/catalogo', [CatalogoController::class, 'index']);
-Route::get('/catalogo/{id}', [CatalogoController::class, 'show'])->name('catalogo.show');

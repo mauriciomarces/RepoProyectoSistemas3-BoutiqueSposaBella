@@ -4,99 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .card-product {
-            height: 200px;
-            display: flex;
-            flex-direction: row;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #fdfdfd;
-        }
-
-        .card-product .col-img {
-            flex: 1 1 40%;
-            overflow: hidden;
-        }
-
-        .card-product .col-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-product .col-info {
-            flex: 1 1 60%;
-            padding: 10px;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card-product .buttons {
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px;
-            margin-top: auto;
-        }
-
-        .card-product .buttons a,
-        .card-product .buttons button {
-            flex: 1;
-        }
-
-        .estado-vendido {
-            color: red;
-            text-decoration: line-through;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .card-product {
-                flex-direction: column;
-                height: auto;
-            }
-            .card-product .col-img {
-                width: 100%;
-                height: 200px;
-            }
-            .card-product .col-img img {
-                height: 100%;
-            }
-            .card-product .col-info {
-                width: 100%;
-                font-size: 0.85rem;
-            }
-            .card-product .buttons {
-                flex-direction: row;
-            }
-        }
-    </style>
+    <link href="{{ asset('css/catalogo.css') }}" rel="stylesheet">
 </head>
-<body style="background-color:#f2f2f2;">
+<body style="background-color:#EDEEE8;">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container position-relative">
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Boutique Sposa Bella" class="nav-logo">
+            </a>
+            <h1 class="navbar-title position-absolute start-50 translate-middle-x mb-0">Catálogo de Productos</h1>
+        </div>
+    </nav>
+    
     <div class="container py-4">
-        <h1 class="mb-4 text-center">Catálogo de Productos</h1>
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="filter-container p-3 bg-white rounded shadow-sm">
+                    <form id="filterForm" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" name="seccion">
+                                <option value="">Todas</option>
+                                @php
+                                    $uniqueSections = array_keys($sections);
+                                    sort($uniqueSections);
+                                @endphp
+                                @foreach($uniqueSections as $seccion)
+                                    <option value="{{ $seccion }}">{{ $seccion }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" name="estado">
+                                <option value="">Todos</option>
+                                <option value="disponible">Disponible</option>
+                                <option value="vendido">Vendido</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
+                            <button type="button" class="btn btn-outline-secondary" id="clearFilters">Limpiar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-        @foreach($sections as $section => $products)
-            <h2 class="mt-4">{{ $section }}</h2>
-            <div class="row">
-                @foreach($products as $product)
-                    <div class="col-md-6 mb-3">
-                        <div class="card h-100 card-product">
-                            <div class="row g-0 h-100">
-                                <div class="col-4 col-img">
-                                    <img src="{{ $product['imagen'] }}" class="img-fluid rounded-start" alt="{{ $product['nombre'] }}">
+        <div id="productsContainer">
+            @foreach($sections as $section => $products)
+                <h2 class="mt-4">{{ $section }}</h2>
+                <div class="row">
+                    @foreach($products as $product)
+                        <div class="col-lg-6 col-md-12 mb-3 d-flex">
+                            <div class="card-product w-100">
+                                <div class="col-img">
+                                    <img src="{{ $product['imagen'] }}" alt="{{ $product['nombre'] }}">
                                 </div>
-                                <div class="col-8 col-info">
+                                <div class="col-info">
                                     <div>
-                                        <h5 class="card-title">{{ $product['nombre'] }}</h5>
-                                        <p class="card-text">{{ $product['descripcion'] }}</p>
-                                        <p class="card-text"><strong>Bs. {{ number_format($product['precio'], 2) }}</strong></p>
-                                        <p class="card-text">
+                                        <div class="card-title">{{ $product['nombre'] }}</div>
+                                        <div class="card-text">{{ $product['descripcion_corta'] }}</div>
+                                        <div class="card-text"><strong>Bs. {{ number_format($product['precio'], 2) }}</strong></div>
+                                        <div class="card-text">
                                             Cantidad: 
                                             @if($product['cantidad'] > 0)
                                                 {{ $product['cantidad'] }}
@@ -109,11 +82,16 @@
                                             @else
                                                 <span class="estado-vendido">{{ $product['estado'] }}</span>
                                             @endif
-                                        </p>
+                                        </div>
                                     </div>
-                                    <div class="buttons mt-2">
-                                        <a href="{{ url('/catalogo/'.$product['id']) }}" class="btn btn-primary btn-sm me-2 mb-2">Ver información</a>
-                                        <button class="btn btn-success btn-sm mb-2" 
+                                    <div class="buttons">
+                                        <button type="button" class="btn btn-primary btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#productModal"
+                                                data-product="{{ json_encode($product) }}">
+                                            Ver información
+                                        </button>
+                                        <button class="btn btn-success btn-sm" 
                                                 @if($product['cantidad'] == 0) disabled @endif>
                                             Comprar/Fletar
                                         </button>
@@ -121,10 +99,102 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-        @endforeach
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="productModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="modal-img-container">
+                                <img src="" class="modal-img" alt="">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="product-title"></h3>
+                            <p class="product-description"></p>
+                            <p class="product-price"></p>
+                            <p class="product-stock"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success buy-button">Comprar/Fletar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productModal = document.getElementById('productModal');
+            productModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const product = JSON.parse(button.getAttribute('data-product'));
+                
+                const modal = this;
+                modal.querySelector('.modal-title').textContent = product.nombre;
+                modal.querySelector('.product-title').textContent = product.nombre;
+                modal.querySelector('.product-description').textContent = product.descripcion;
+                modal.querySelector('.product-price').textContent = `Bs. ${product.precio.toFixed(2)}`;
+                modal.querySelector('.modal-img').src = product.imagen;
+                modal.querySelector('.modal-img').alt = product.nombre;
+                
+                const stockText = product.cantidad > 0 
+                    ? `Cantidad: ${product.cantidad} | Estado: ${product.estado}`
+                    : `<span class="estado-vendido">Vendido</span>`;
+                modal.querySelector('.product-stock').innerHTML = stockText;
+                
+                const buyButton = modal.querySelector('.buy-button');
+                if (product.cantidad === 0) {
+                    buyButton.disabled = true;
+                    buyButton.classList.add('disabled');
+                } else {
+                    buyButton.disabled = false;
+                    buyButton.classList.remove('disabled');
+                }
+            });
+
+            const filterForm = document.getElementById('filterForm');
+            const clearFiltersBtn = document.getElementById('clearFilters');
+
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                applyFilters();
+            });
+
+            clearFiltersBtn.addEventListener('click', function() {
+                filterForm.reset();
+                applyFilters();
+            });
+
+            function applyFilters() {
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams(formData);
+                
+                fetch(`/catalogo?${params.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('productsContainer').innerHTML = html;
+                });
+            }
+        });
+    </script>
 </body>
 </html>
