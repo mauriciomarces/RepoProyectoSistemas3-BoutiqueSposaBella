@@ -1,8 +1,15 @@
+<link rel="stylesheet" href="{{ asset('css/inventario.css') }}">
+
 <h1>Agregar Categoría</h1>
-<form action="{{ route('categorias.store') }}" method="POST">
+
+<form action="{{ route('categorias.store') }}" method="POST" class="form-inventario">
     @csrf
-    <label>Nombre:</label>
-    <input type="text" name="nombre" required>
-    <button type="submit">Guardar</button>
+
+    <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" id="nombre" required>
+    </div>
+
+    <button type="submit" class="btn-accion btn-agregar">Guardar</button>
+    <a href="{{ route('categorias.index') }}" class="btn-accion btn-eliminar">Volver</a>
 </form>
-<a href="{{ route('categorias.index') }}">Volver</a>
