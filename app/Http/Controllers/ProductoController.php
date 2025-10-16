@@ -57,4 +57,11 @@ class ProductoController extends Controller
         $producto->delete();
         return redirect()->route('productos.index');
     }
+    
+    public function bajoStock()
+{
+    $productos = Producto::whereColumn('cantidad', '<=', 'stock_minimo')->get();
+    return view('productos.bajoStock', compact('productos'));
+}
+
 }
