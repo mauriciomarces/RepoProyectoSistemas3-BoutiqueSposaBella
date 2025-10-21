@@ -156,3 +156,72 @@ h1 {
     font-size: 0.8em;
     margin-left: 4px;
 }
+/* Contenedor de búsqueda */
+.form-busqueda {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 20px;
+}
+
+/* Input de búsqueda */
+.input-busqueda {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-busqueda:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+/* Botón de búsqueda */
+.btn-buscar {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-buscar:hover {
+    background-color: #0056b3;
+}
+
+/* Botón limpiar */
+.btn-limpiar {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.btn-limpiar:hover {
+    background-color: #5a6268;
+}
+.form-busqueda {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-busqueda .form-control {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-busqueda .btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+}

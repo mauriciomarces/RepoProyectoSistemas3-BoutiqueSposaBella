@@ -9,6 +9,7 @@ Route::resource('categorias', CategoriaController::class);
 Route::resource('productos', ProductoController::class);
 Route::resource('movimientos', MovimientoController::class);
 
+
 Route::get('/productos/stock-bajo', [ProductoController::class, 'bajoStock'])->name('productos.bajoStock');
 
 Route::get('/', function () {

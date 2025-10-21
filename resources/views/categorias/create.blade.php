@@ -8,6 +8,9 @@
     <div class="form-group">
         <label for="nombre">Nombre:</label>
         <input type="text" name="nombre" id="nombre" required>
+        @error('nombre')
+            <span class="error">{{ $message }}</span>
+        @enderror
     </div>
 
     <button type="submit" class="btn-accion btn-agregar">Guardar</button>

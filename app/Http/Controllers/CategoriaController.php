@@ -20,7 +20,10 @@ class CategoriaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['nombre' => 'required|unique:categorias']);
+        $request->validate([
+            'nombre' => 'required|unique:categorias,nombre', // <- Aquí se evita duplicidad
+        ]);
+
         Categoria::create($request->all());
         return redirect()->route('categorias.index');
     }
@@ -32,7 +35,10 @@ class CategoriaController extends Controller
 
     public function update(Request $request, Categoria $categoria)
     {
-        $request->validate(['nombre' => 'required|unique:categorias,nombre,'.$categoria->id]);
+        $request->validate([
+            'nombre' => 'required|unique:categorias,nombre,' . $categoria->id, // <- permite editar sin duplicar
+        ]);
+
         $categoria->update($request->all());
         return redirect()->route('categorias.index');
     }

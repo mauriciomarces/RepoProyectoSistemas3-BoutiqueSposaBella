@@ -11,6 +11,23 @@
     </div>
 @endif
 
+<form method="GET" action="{{ route('productos.index') }}" class="form-busqueda">
+    <input 
+        type="text" 
+        name="search" 
+        placeholder="🔍 Buscar producto..." 
+        value="{{ $query ?? '' }}"
+        class="input-busqueda"
+    >
+    <button type="submit" class="btn-buscar">Buscar</button>
+    @if(request('search'))
+        <a href="{{ route('productos.index') }}" class="btn-limpiar">✖ Limpiar</a>
+    @endif
+</form>
+
+
+
+
 <table class="table-inventario">
     <thead>
         <tr>
