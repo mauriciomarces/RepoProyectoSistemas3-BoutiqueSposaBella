@@ -1,90 +1,108 @@
-<div class="cliente-detalle p-2">
-    <div class="mb-3">
-        <h5 class="text-center mb-3" style="color: #8E805E;">
-            {{ $cliente->nombre }} {{ $cliente->apellido }}
-        </h5>
-    </div>
-    
-    <div class="info-section mb-3">
-        <h6 class="section-title">Información de Contacto</h6>
-        <div class="row g-2">
-            <div class="col-md-6">
-                <div class="info-item">
-                    <small class="text-muted">Email</small>
-                    <p class="mb-0">{{ $cliente->email }}</p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="info-item">
-                    <small class="text-muted">Teléfono</small>
-                    <p class="mb-0">{{ $cliente->telefono }}</p>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <h6 class="fw-bold" style="color: #8E805E;">Información Personal</h6>
+            <table class="table table-sm">
+                <tr>
+                    <td class="fw-bold">Nombre:</td>
+                    <td>{{ $cliente->nombre }} {{ $cliente->apellido }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Email:</td>
+                    <td>{{ $cliente->email }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Teléfono:</td>
+                    <td>{{ $cliente->telefono }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Dirección:</td>
+                    <td>{{ $cliente->direccion ?? 'No registrada' }}</td>
+                </tr>
+            </table>
         </div>
 
-        @if($cliente->direccion)
-        <div class="row g-2 mt-2">
-            <div class="col-12">
-                <div class="info-item">
-                    <small class="text-muted">Dirección</small>
-                    <p class="mb-0">{{ $cliente->direccion }}</p>
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
-
-    <div class="info-section mb-3">
-        <h6 class="section-title">Medidas Corporales</h6>
-        <div class="row g-2">
-            <div class="col-4">
-                <div class="medida-card text-center">
-                    <small class="text-muted d-block">Busto</small>
-                    <strong class="fs-5" style="color: #8E805E;">{{ $cliente->busto }}</strong>
-                    <small class="text-muted d-block">cm</small>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="medida-card text-center">
-                    <small class="text-muted d-block">Cintura</small>
-                    <strong class="fs-5" style="color: #8E805E;">{{ $cliente->cintura }}</strong>
-                    <small class="text-muted d-block">cm</small>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="medida-card text-center">
-                    <small class="text-muted d-block">Cadera</small>
-                    <strong class="fs-5" style="color: #8E805E;">{{ $cliente->cadera }}</strong>
-                    <small class="text-muted d-block">cm</small>
-                </div>
-            </div>
+        <div class="col-md-6">
+            <h6 class="fw-bold" style="color: #8E805E;">Medidas</h6>
+            <table class="table table-sm">
+                <tr>
+                    <td class="fw-bold">Busto:</td>
+                    <td>{{ $cliente->medidas->busto }} cm</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Cintura:</td>
+                    <td>{{ $cliente->medidas->cintura }} cm</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Cadera:</td>
+                    <td>{{ $cliente->medidas->cadera }} cm</td>
+                </tr>
+            </table>
         </div>
     </div>
 
-    @if(isset($cliente->historial_compras) && is_array($cliente->historial_compras) && count($cliente->historial_compras) > 0)
-    <div class="info-section">
-        <h6 class="section-title">Historial de Compras</h6>
-        <div class="list-group list-group-flush">
+    <hr class="my-3">
+
+    <h6 class="fw-bold mb-3" style="color: #8E805E;">
+        <i class="bi bi-bag-check-fill me-2"></i>Historial de Compras
+    </h6>
+
+    @if(count($cliente->historial_compras) > 0)
+        <div class="accordion" id="historialAccordion">
             @foreach($cliente->historial_compras as $index => $compra)
-            <div class="list-group-item px-0">
-                <small class="text-muted">Compra #{{ $index + 1 }}</small>
-                <p class="mb-0">
-                    @if(is_array($compra))
-                        @foreach($compra as $key => $value)
-                            <span class="d-block"><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</span>
-                        @endforeach
-                    @else
-                        {{ $compra }}
-                    @endif
-                </p>
+            <div class="accordion-item mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#compra{{ $index }}" aria-expanded="false">
+                        <div class="d-flex justify-content-between w-100 pe-3">
+                            <span>
+                                <strong>Pedido #{{ $compra->id }}</strong> - {{ date('d/m/Y', strtotime($compra->fecha)) }}
+                            </span>
+                            <span class="badge bg-{{ $compra->estado == 'entregado' ? 'success' : ($compra->estado == 'pendiente' ? 'warning' : 'info') }}">
+                                {{ ucfirst($compra->estado) }}
+                            </span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="compra{{ $index }}" class="accordion-collapse collapse" data-bs-parent="#historialAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Tipo:</strong> {{ $compra->tipo }}</p>
+                                <p><strong>Fecha de Entrega:</strong> {{ date('d/m/Y', strtotime($compra->fecha_entrega)) }}</p>
+                                <p><strong>Estado de Pago:</strong> 
+                                    <span class="badge bg-{{ $compra->estado_pago == 'completado' ? 'success' : 'warning' }}">
+                                        {{ ucfirst($compra->estado_pago) }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Monto Total:</strong> <span class="text-success fw-bold">Bs. {{ number_format($compra->monto_total, 2) }}</span></p>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h6 class="fw-bold mb-2">Productos:</h6>
+                        <ul class="list-group">
+                            @foreach($compra->productos as $producto)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ $producto->nombre }}</span>
+                                <span>
+                                    <span class="badge bg-secondary">Cantidad: {{ $producto->cantidad }}</span>
+                                    <span class="badge bg-primary">Bs. {{ number_format($producto->precio_unitario, 2) }}</span>
+                                </span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
             @endforeach
         </div>
-    </div>
     @else
-    <div class="alert alert-info mb-0">
-        <small>Este cliente aún no tiene compras registradas.</small>
-    </div>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Este cliente aún no tiene compras registradas.
+        </div>
     @endif
 </div>
 

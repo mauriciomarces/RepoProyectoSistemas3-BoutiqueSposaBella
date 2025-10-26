@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Cliente;
 
 class ClienteController extends Controller
@@ -29,7 +31,7 @@ class ClienteController extends Controller
             return (object)[
                 'id' => $cliente->ID_cliente,
                 'nombre' => $cliente->nombre,
-                'apellido' => '', // no hay campo apellido en la tabla
+                'apellido' => '',
                 'correo' => $cliente->correo,
                 'email' => $cliente->correo,
                 'telefono' => $cliente->telefono,
@@ -42,7 +44,7 @@ class ClienteController extends Controller
                     'cintura' => $cliente->cintura ?? 0,
                     'cadera' => $cliente->cadera ?? 0
                 ],
-                'historial_compras' => $cliente->historial_compras ?? [] // si luego agregas tabla compras
+                'historial_compras' => []
             ];
         });
 
@@ -77,7 +79,7 @@ class ClienteController extends Controller
             'busto' => $request->busto,
             'cintura' => $request->cintura,
             'cadera' => $request->cadera,
-            'password' => bcrypt('123456') // contraseña default
+            'password' => bcrypt('123456')
         ]);
 
         return redirect()->route('clientes.index')->with('success', 'Cliente registrado exitosamente');
@@ -90,7 +92,48 @@ class ClienteController extends Controller
             return response()->json(['error' => 'Cliente no encontrado'], 404);
         }
 
-        // Normalización para la vista
+        // Obtener historial de compras (pedidos y transacciones)
+        $historialCompras = DB::table('pedido')
+            ->leftJoin('transaccion', 'pedido.ID_cliente', '=', 'transaccion.ID_cliente')
+            ->leftJoin('detalle_pedido', 'pedido.ID_pedido', '=', 'detalle_pedido.ID_pedido')
+            ->leftJoin('producto', 'detalle_pedido.ID_producto', '=', 'producto.ID_producto')
+            ->where('pedido.ID_cliente', $id)
+            ->select(
+                'pedido.ID_pedido',
+                'pedido.fecha_pedido',
+                'pedido.estado as estado_pedido',
+                'pedido.fecha_entrega',
+                'pedido.tipo_pedido',
+                'transaccion.monto',
+                'transaccion.tipo_transaccion',
+                'transaccion.estado as estado_pago',
+                'producto.nombre as producto_nombre',
+                'detalle_pedido.cantidad',
+                'detalle_pedido.precio_unitario'
+            )
+            ->orderBy('pedido.fecha_pedido', 'desc')
+            ->get()
+            ->groupBy('ID_pedido')
+            ->map(function($items) {
+                $firstItem = $items->first();
+                return (object)[
+                    'id' => $firstItem->ID_pedido,
+                    'fecha' => $firstItem->fecha_pedido,
+                    'tipo' => $firstItem->tipo_pedido,
+                    'estado' => $firstItem->estado_pedido,
+                    'fecha_entrega' => $firstItem->fecha_entrega,
+                    'monto_total' => $firstItem->monto ?? 0,
+                    'estado_pago' => $firstItem->estado_pago ?? 'pendiente',
+                    'productos' => $items->map(function($item) {
+                        return (object)[
+                            'nombre' => $item->producto_nombre,
+                            'cantidad' => $item->cantidad,
+                            'precio_unitario' => $item->precio_unitario
+                        ];
+                    })->toArray()
+                ];
+            })->values();
+
         $clienteObj = (object)[
             'id' => $cliente->ID_cliente,
             'nombre' => $cliente->nombre,
@@ -107,7 +150,7 @@ class ClienteController extends Controller
                 'cintura' => $cliente->cintura ?? 0,
                 'cadera' => $cliente->cadera ?? 0
             ],
-            'historial_compras' => [] // después podrías cargar de otra tabla
+            'historial_compras' => $historialCompras
         ];
 
         return view('clientes.partials.detalle_cliente_modal', ['cliente' => $clienteObj])->render();
@@ -120,13 +163,18 @@ class ClienteController extends Controller
             return redirect()->route('clientes.index')->with('error', 'Cliente no encontrado');
         }
 
+        // FIX: Ahora pasamos el objeto Cliente directamente con todas sus propiedades
         $clienteObj = (object)[
+            'ID_cliente' => $cliente->ID_cliente,  // ← ESTO ES LO QUE FALTABA
             'id' => $cliente->ID_cliente,
             'nombre' => $cliente->nombre,
             'apellido' => '',
             'correo' => $cliente->correo,
             'telefono' => $cliente->telefono,
-            'direccion' => $cliente->direccion,
+            'direccion' => $cliente->direccion ?? '',
+            'busto' => $cliente->busto ?? 0,
+            'cintura' => $cliente->cintura ?? 0,
+            'cadera' => $cliente->cadera ?? 0,
             'medidas' => (object)[
                 'busto' => $cliente->busto ?? 0,
                 'cintura' => $cliente->cintura ?? 0,

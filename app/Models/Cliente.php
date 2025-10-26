@@ -20,6 +20,13 @@ class Cliente extends Model
         'direccion',
         'telefono',
         'CI',
-        'ID_sucursal'
+        'ID_sucursal',
+        'busto',
+        'cintura',
+        'cadera'
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 }
