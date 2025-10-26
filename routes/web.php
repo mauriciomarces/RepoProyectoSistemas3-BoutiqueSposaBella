@@ -10,7 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\RegistroController;
 
-// RUTA PRINCIPAL (WELCOME)
+
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
