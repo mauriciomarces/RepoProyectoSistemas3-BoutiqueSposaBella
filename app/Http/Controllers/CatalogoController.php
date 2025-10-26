@@ -3,81 +3,59 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CatalogoController extends Controller
 {
-    protected $productosJsonPath;
-
-    public function __construct()
-    {
-        // Ruta al archivo JSON en storage/app/productos.json
-        $this->productosJsonPath = storage_path('app/products.json');
-    }
-
-    /**
-     * Mostrar catálogo completo
-     */
     public function index(Request $request)
     {
-        $products = $this->getProductos();
+        // Consulta inicial: productos visibles
+        $query = DB::table('producto')->whereNotNull('categoria');
 
-        // Filtrado por stock
-        if ($request->has('stock')) {
-            $stock = $request->stock;
-            $products = array_filter($products, function ($product) use ($stock) {
-                return match($stock) {
-                    'available' => $product['cantidad'] > 0,
-                    'sold'      => $product['cantidad'] === 0,
-                    default     => true,
-                };
-            });
+        // Aplicar filtros
+        if ($request->filled('seccion')) {
+            $query->where('categoria', $request->input('seccion'));
+        }
+        if ($request->filled('estado')) {
+            if ($request->input('estado') === 'disponible') {
+                $query->where('stock', '>', 0);
+            } elseif ($request->input('estado') === 'vendido') {
+                $query->where('stock', '<=', 0);
+            }
         }
 
-        // Agrupar productos por secciones
+        $productos = $query->get();
+
         $sections = [];
-        foreach ($products as $product) {
-            $sections[$product['seccion']][] = $product;
+
+        foreach ($productos as $prod) {
+            $productoArray = [
+                'id' => $prod->ID_producto,
+                'nombre' => $prod->nombre,
+                'descripcion' => $prod->descripcion,
+                'descripcion_corta' => strlen($prod->descripcion) > 50 ? substr($prod->descripcion, 0, 50) . '...' : $prod->descripcion,
+                'cantidad' => $prod->stock,
+                'estado' => $prod->stock > 0 ? 'Disponible' : 'Vendido',
+                'categoria' => $prod->categoria ?? 'Sin categoría',
+                'precio' => isset($prod->precio) ? $prod->precio : 0,
+                'imagen' => (!empty($prod->imagen) && file_exists(public_path('images/productos/' . $prod->imagen))) 
+                            ? asset('images/productos/' . $prod->imagen) 
+                            : asset('images/productos/default.png')
+            ];
+
+            $categoria = $productoArray['categoria'];
+            if (!isset($sections[$categoria])) {
+                $sections[$categoria] = [];
+            }
+            $sections[$categoria][] = $productoArray;
         }
 
-        // Retornar vista parcial si es AJAX, o la vista completa
+        ksort($sections);
+
         if ($request->ajax()) {
-            return view('catalogo-partial', compact('sections'));
+            return view('catalogo-partial', compact('sections'))->render();
         }
 
         return view('catalogo', compact('sections'));
-    }
-
-    /**
-     * Mostrar detalle de un producto
-     */
-    public function show($id)
-    {
-        $products = $this->getProductos();
-
-        $product = collect($products)->firstWhere('id', (int)$id);
-
-        if (!$product) {
-            abort(404, "Producto no encontrado.");
-        }
-
-        return view('catalogo-show', compact('product'));
-    }
-
-    /**
-     * Leer y decodificar JSON de productos
-     */
-    private function getProductos(): array
-    {
-        if (!file_exists($this->productosJsonPath)) {
-            abort(404, "Archivo de productos no encontrado.");
-        }
-
-        $products = json_decode(file_get_contents($this->productosJsonPath), true);
-
-        if ($products === null) {
-            abort(500, "Error al decodificar el JSON de productos.");
-        }
-
-        return $products;
     }
 }

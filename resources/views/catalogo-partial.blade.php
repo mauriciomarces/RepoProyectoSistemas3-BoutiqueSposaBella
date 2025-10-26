@@ -20,23 +20,17 @@
                                     @else
                                         <span class="estado-vendido">Vendido</span>
                                     @endif
-                                    | Estado: 
-                                    @if($product['cantidad'] > 0)
-                                        {{ $product['estado'] }}
-                                    @else
-                                        <span class="estado-vendido">{{ $product['estado'] }}</span>
-                                    @endif
+                                    | Estado: {{ $product['estado'] }}
                                 </div>
                             </div>
                             <div class="buttons">
                                 <button type="button" class="btn btn-primary btn-sm" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#productModal"
-                                        data-product="{{ json_encode($product) }}">
+                                        data-product='@json($product)'>
                                     Ver información
                                 </button>
-                                <button class="btn btn-success btn-sm" 
-                                        @if($product['cantidad'] == 0) disabled @endif>
+                                <button class="btn btn-success btn-sm" @if($product['cantidad'] == 0) disabled @endif>
                                     Comprar/Fletar
                                 </button>
                             </div>

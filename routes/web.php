@@ -6,10 +6,16 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\RegistroController;
 
+// routes/web.php
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome'); // <-- nombre agregado
+
+
 
 // RUTAS CATÁLOGO
 Route::get('/catalogo', [CatalogoController::class, 'index']);
@@ -28,3 +34,17 @@ Route::resource('categorias', CategoriaController::class);
 Route::resource('productos', ProductoController::class);
 Route::resource('movimientos', MovimientoController::class);
 Route::get('/productos/stock-bajo', [ProductoController::class, 'bajoStock'])->name('productos.bajoStock');
+
+// Login
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+//RUTAS EMPLEADOS
+Route::get('/employees', [EmployeeController::class, 'index']);
+Route::post('/employees', [EmployeeController::class, 'store']);
+Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
+
+//RUTAS REGISTRO
+Route::get('/registro', [RegistroController::class, 'mostrarFormulario'])->name('registro');
+Route::post('/registro', [RegistroController::class, 'registrar'])->name('registro.guardar');

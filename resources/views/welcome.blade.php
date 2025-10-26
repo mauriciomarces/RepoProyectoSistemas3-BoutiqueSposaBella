@@ -21,7 +21,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('/catalogo') }}">Catálogo</a>
                     </li>
@@ -31,9 +31,18 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#contacto">Contacto</a>
                     </li>
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-auth" href="#">Iniciar Sesión</a>
-                    </li>
+                    @if(session('nombre'))
+                        <li class="nav-item ms-3">
+                            <span class="navbar-text">Hola, {{ session('nombre') }}!</span>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-auth" href="{{ route('logout') }}">Cerrar Sesión</a>
+                        </li>
+                    @else
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-auth" href="{{ route('login') }}">Iniciar Sesión</a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>
@@ -132,7 +141,7 @@
                         </div>
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-telephone-fill me-3 text-sposabella"></i>
-                            <span>+591 12345678</span>
+                            <span>+591 62498914</span>
                         </div>
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-envelope-fill me-3 text-sposabella"></i>
@@ -145,20 +154,14 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
-                    <div class="contact-form p-4 bg-white rounded shadow-sm">
-                        <h3 class="h5 mb-4">Envíanos un mensaje</h3>
-                        <form>
-                            <div class="mb-3">
-                                <input type="text" class="form-control" placeholder="Nombre completo" required>
-                            </div>
-                            <div class="mb-3">
-                                <input type="email" class="form-control" placeholder="Correo electrónico" required>
-                            </div>
-                            <div class="mb-3">
-                                <textarea class="form-control" rows="4" placeholder="Mensaje" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-main">Enviar Mensaje</button>
-                        </form>
+                    <div class="contact-info p-4 bg-white rounded shadow-sm text-center">
+                        <h3 class="h5 mb-4">Contáctanos por WhatsApp</h3>
+                        <p class="mb-4 text-muted">Haz clic en el botón y envíanos un mensaje directo.</p>
+                        <a href="https://api.whatsapp.com/send?phone=59162498914&text=Hola%20SposaBella" 
+                        class="btn btn-success btn-lg" target="_blank"
+                        style="background-color: #8E805E; border-color: #8E805E; font-weight: 600;">
+                            <i class="bi bi-whatsapp me-2"></i> Contactar por WhatsApp
+                        </a>
                     </div>
                 </div>
             </div>
