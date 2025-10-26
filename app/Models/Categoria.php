@@ -9,9 +9,9 @@ class Categoria extends Model
 {
     protected $fillable = ['nombre'];
 
-    // Relación con productos
     public function productos()
     {
         return $this->hasMany(Producto::class);
     }
 }
+

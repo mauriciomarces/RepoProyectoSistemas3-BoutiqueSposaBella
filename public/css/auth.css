@@ -1,0 +1,19 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Playfair Display', serif;
+}
+
+.card {
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.btn-primary {
+    background-color: #b8895b;
+    border-color: #b8895b;
+}
+
+.btn-primary:hover {
+    background-color: #9e7145;
+    border-color: #9e7145;
+}
