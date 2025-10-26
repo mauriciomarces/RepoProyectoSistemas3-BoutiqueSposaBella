@@ -1,7 +1,7 @@
 *
-<<<<<<< HEAD
-=======
 !private/
->>>>>>> origin/definitiva-Caleb
+
+!private/
+
 !public/
 !.gitignore
