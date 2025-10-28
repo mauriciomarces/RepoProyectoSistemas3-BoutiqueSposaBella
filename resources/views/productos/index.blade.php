@@ -1,72 +1,244 @@
-<link rel="stylesheet" href="{{ asset('css/inventario.css') }}">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos - Confecciones</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Paleta de colores de SposaBella */
+        :root {
+            --color-primary: #8E805E;
+            --color-secondary: #D4C4A0;
+            --color-dark: #2c2c2c;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        h1 {
+            color: var(--color-dark);
+        }
+        
+        .btn-primary {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #7a6f51;
+            border-color: #7a6f51;
+        }
+        
+        .btn-outline-secondary {
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+            color: white;
+        }
+        
+        .table-dark {
+            background-color: var(--color-dark);
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .badge.bg-secondary {
+            background-color: var(--color-secondary) !important;
+            color: var(--color-dark);
+        }
+        
+        .text-success {
+            color: var(--color-primary) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-tshirt"></i> Lista de Productos</h1>
+            <a href="{{ route('productos.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Producto
+            </a>
+        </div>
 
-<h1>Productos</h1>
+        {{-- =========================================== --}}
+        {{-- ALERTAS DE INVENTARIO --}}
+        {{-- =========================================== --}}
+        @if($productosAgotados > 0)
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h5><i class="fas fa-exclamation-triangle"></i> ¡ALERTA DE INVENTARIO!</h5>
+            <strong>{{ $productosAgotados }} producto(s) AGOTADO(S)</strong> - Necesita reposición inmediata.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
 
-<a href="{{ route('productos.create') }}" class="btn-accion btn-agregar">Agregar Producto</a>
+        @if($productosBajos > 0)
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <h5><i class="fas fa-exclamation-circle"></i> Inventario Bajo</h5>
+            <strong>{{ $productosBajos }} producto(s) con stock bajo</strong> - Considerar reposición.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
 
-{{-- 🔔 ALERTA GENERAL: muestra un aviso si hay productos con stock bajo --}}
-@if($productos->where('cantidad', '<=', 'stock_minimo')->count() > 0)
-    <div class="alerta-stock-bajo">
-        ⚠️ Hay productos con stock bajo. Revisa la lista.
+        @if($productosAgotados == 0 && $productosBajos == 0)
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <h5><i class="fas fa-check-circle"></i> Inventario en Orden</h5>
+            Todos los productos tienen stock suficiente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Descripción Corta</th>
+                                <th>Categoría</th>
+                                <th>Precio (Bs)</th>
+                                <th>Stock / Mínimo</th>
+                                <th>Estado</th>
+                                <th>Proveedor</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($productos as $producto)
+                            <tr class="@if($producto->estaAgotado()) table-danger @elseif($producto->necesitaReposicion()) table-warning @endif">
+                                <td>{{ $producto->ID_producto }}</td>
+                                <td>
+                                    @if(!empty($producto->imagen) && file_exists(public_path('images/productos/' . $producto->imagen)))
+                                        <img src="{{ asset('images/productos/' . $producto->imagen) }}" 
+                                            alt="{{ $producto->nombre }}" 
+                                            style="width: 50px; height: 50px; object-fit: cover;" 
+                                            class="rounded">
+                                    @else
+                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                    @endif
+
+
+                                </td>
+                                <td>{{ $producto->nombre }}</td>
+                                <td>{{ $producto->descripcion_corta }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ $producto->categoria }}</span>
+                                </td>
+                                <td>
+                                    <strong class="text-success">Bs {{ number_format($producto->precio, 2) }}</strong>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold {{ $producto->estaAgotado() ? 'text-danger' : ($producto->necesitaReposicion() ? 'text-warning' : 'text-success') }}">
+                                            {{ $producto->stock }} unidades
+                                        </span>
+                                        <small class="text-muted">
+                                            Mín: {{ $producto->stock_minimo }}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($producto->estaAgotado())
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times-circle"></i> Agotado
+                                        </span>
+                                    @elseif($producto->necesitaReposicion())
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-exclamation-triangle"></i> Bajo
+                                        </span>
+                                    @else
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle"></i> Normal
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>{{ $producto->proveedor->nombre ?? 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('productos.edit', $producto->ID_producto) }}" 
+                                           class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('productos.destroy', $producto->ID_producto) }}" 
+                                              method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" 
+                                                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+{{-- RESUMEN DE ALERTAS - CORREGIDO --}}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                @php
+                    $productosNormales = $productos->filter(function($producto) {
+                        return $producto->stock > $producto->stock_minimo;
+                    })->count();
+                @endphp
+                <h3 class="text-success">{{ $productosNormales }}</h3>
+                <p class="mb-0">Productos con stock normal</p>
+            </div>
+        </div>
     </div>
-@endif
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h3 class="text-warning">{{ $productosBajos }}</h3>
+                <p class="mb-0">Productos con stock bajo</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h3 class="text-danger">{{ $productosAgotados }}</h3>
+                <p class="mb-0">Productos agotados</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<form method="GET" action="{{ route('productos.index') }}" class="form-busqueda">
-    <input 
-        type="text" 
-        name="search" 
-        placeholder="🔍 Buscar producto..." 
-        value="{{ $query ?? '' }}"
-        class="input-busqueda"
-    >
-    <button type="submit" class="btn-buscar">Buscar</button>
-    @if(request('search'))
-        <a href="{{ route('productos.index') }}" class="btn-limpiar">✖ Limpiar</a>
-    @endif
-</form>
+        <div class="mt-3">
+            <a href="{{ route('proveedores.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-truck"></i> Gestionar Proveedores
+            </a>
+        </div>
+    </div>
 
-
-
-
-<table class="table-inventario">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Cantidad</th>
-            <th>Stock Mínimo</th>
-            <th>Precio Unitario</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($productos as $producto)
-        <tr @if($producto->cantidad <= $producto->stock_minimo) class="fila-alerta" @endif>
-            <td>{{ $producto->id }}</td>
-            <td>{{ $producto->nombre }}</td>
-            <td>{{ $producto->categoria?->nombre }}</td>
-            <td>
-                {{ $producto->cantidad }}
-                {{-- 🔴 Alerta visual por producto --}}
-                @if($producto->cantidad <= $producto->stock_minimo)
-                    <span class="badge-alerta">Stock bajo</span>
-                @endif
-            </td>
-            <td>{{ $producto->stock_minimo }}</td>
-            <td>{{ $producto->precio_unitario }}</td>
-            <td>
-                <!-- Botón Editar -->
-                <a href="{{ route('productos.edit', $producto->id) }}" class="btn-accion btn-editar">Editar</a>
-
-                <!-- Botón Eliminar -->
-                <form action="{{ route('productos.destroy', $producto->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-accion btn-eliminar">Eliminar</button>
-                </form>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
