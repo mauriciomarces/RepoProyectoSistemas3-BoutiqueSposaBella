@@ -6,6 +6,43 @@
     <title>Editar Producto - Confecciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Paleta de colores de SposaBella */
+        :root {
+            --color-primary: #8E805E;
+            --color-secondary: #D4C4A0;
+            --color-dark: #2c2c2c;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .card-header {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #7a6f51;
+            border-color: #7a6f51;
+        }
+        
+        .form-label {
+            color: var(--color-dark);
+            font-weight: 500;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-4">
@@ -13,7 +50,7 @@
             <div class="col-md-8 mx-auto">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">
+                        <h3 class="card-title mb-0">
                             <i class="fas fa-edit"></i> Editar Producto
                         </h3>
                     </div>
@@ -73,26 +110,20 @@
                                                value="{{ old('stock', $producto->stock) }}" required min="0">
                                     </div>
                                 </div>
-                                {{-- CAMPO STOCK MÍNIMO --}}
-<div class="row">
-    <div class="col-md-6">
-        <div class="mb-3">
-            <label for="stock_minimo" class="form-label">Stock Mínimo *</label>
-            <input type="number" class="form-control" id="stock_minimo" name="stock_minimo"
-                   value="{{ old('stock_minimo', $producto->stock_minimo) }}" required min="0">
-            <div class="form-text">Alerta cuando el stock llegue a este nivel</div>
-            @error('stock_minimo')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-    </div>
-    <div class="col-md-6">
-        {{-- Espacio para otro campo si lo necesitas --}}
-    </div>
-</div>
                             </div>
 
                             <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="stock_minimo" class="form-label">Stock Mínimo *</label>
+                                        <input type="number" class="form-control" id="stock_minimo" name="stock_minimo"
+                                               value="{{ old('stock_minimo', $producto->stock_minimo) }}" required min="0">
+                                        <div class="form-text">Alerta cuando el stock llegue a este nivel</div>
+                                        @error('stock_minimo')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="ID_proveedor" class="form-label">Proveedor *</label>
@@ -107,16 +138,15 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="imagen" class="form-label">URL de Imagen</label>
-                                        <input type="text" class="form-control" id="imagen" name="imagen"
-                                               value="{{ old('imagen', $producto->imagen) }}" placeholder="ejemplo: producto.jpg">
-                                    </div>
-                                </div>
                             </div>
 
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <div class="mb-3">
+                                <label for="imagen" class="form-label">URL de Imagen</label>
+                                <input type="text" class="form-control" id="imagen" name="imagen"
+                                       value="{{ old('imagen', $producto->imagen) }}" placeholder="ejemplo: producto.jpg">
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                                 <a href="{{ route('productos.index') }}" class="btn btn-secondary me-md-2">
                                     <i class="fas fa-arrow-left"></i> Cancelar
                                 </a>

@@ -9,10 +9,10 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\RegistroController;
-// AGREGAR ESTA LÍNEA:
 use App\Http\Controllers\ProveedorController;
 
 
+// Rutas públicas (para clientes)
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
