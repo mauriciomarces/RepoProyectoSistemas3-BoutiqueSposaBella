@@ -9,6 +9,8 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\RegistroController;
+// AGREGAR ESTA LÍNEA:
+use App\Http\Controllers\ProveedorController;
 
 
 Route::get('/', function () {
@@ -50,19 +52,29 @@ Route::middleware(['check.employee'])->group(function () {
     Route::put('/clientes/{id}', [ClienteController::class, 'update'])->name('clientes.update');
     Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
     
-    // RUTAS CATEGORÍAS
-    Route::resource('categorias', CategoriaController::class);
-    
-    // RUTAS PRODUCTOS
-    Route::resource('productos', ProductoController::class);
-    Route::get('/productos/stock-bajo', [ProductoController::class, 'bajoStock'])->name('productos.bajoStock');
-    
-    // RUTAS MOVIMIENTOS
-    Route::resource('movimientos', MovimientoController::class);
-    
     // RUTAS EMPLEADOS
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
-    
+
+    // ============================================
+    // RUTAS PRODUCTOS (AGREGAR SI NO EXISTEN)
+    // ============================================
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('/productos/create', [ProductoController::class, 'create'])->name('productos.create');
+    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
+    Route::get('/productos/{id}/edit', [ProductoController::class, 'edit'])->name('productos.edit');
+    Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update');
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+
+    // ============================================
+    // RUTAS PROVEEDORES (NUEVAS - AGREGAR ESTAS)
+    // ============================================
+    Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
+    Route::get('/proveedores/create', [ProveedorController::class, 'create'])->name('proveedores.create');
+    Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+    Route::get('/proveedores/{id}/edit', [ProveedorController::class, 'edit'])->name('proveedores.edit');
+    Route::put('/proveedores/{id}', [ProveedorController::class, 'update'])->name('proveedores.update');
+    Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+
 });

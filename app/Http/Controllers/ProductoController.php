@@ -3,84 +3,88 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
-use App\Models\Categoria;
+use App\Models\Proveedor;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    // 📋 Mostrar lista de productos (con filtro de búsqueda)
-    public function index(Request $request)
-    {
-        $query = $request->input('search');
+public function index()
+{
+    $productos = Producto::with('proveedor')->get();
+    
+    // Calcular alertas - CORREGIDO
+    $productosAgotados = $productos->where('stock', 0)->count();
+    
+    // CORRECCIÓN: Productos con stock bajo (mayor que 0 pero menor o igual al mínimo)
+    $productosBajos = $productos->filter(function($producto) {
+        return $producto->stock > 0 && $producto->stock <= $producto->stock_minimo;
+    })->count();
+    
+    return view('productos.index', compact('productos', 'productosAgotados', 'productosBajos'));
+}
 
-        $productos = Producto::with('categoria')
-            ->when($query, function ($q) use ($query) {
-                $q->where('nombre', 'LIKE', "%{$query}%")
-                  ->orWhereHas('categoria', function ($cat) use ($query) {
-                      $cat->where('nombre', 'LIKE', "%{$query}%");
-                  });
-            })
-            ->paginate(10);
-
-        return view('productos.index', compact('productos', 'query'));
-    }
-
-    // ➕ Formulario para crear producto
     public function create()
     {
-        $categorias = Categoria::all();
-        return view('productos.create', compact('categorias'));
+        $proveedores = Proveedor::all();
+        $categorias = ['Gala', 'Casual', 'Fiesta', 'Trabajo', 'Novia'];
+        return view('productos.create', compact('proveedores', 'categorias'));
     }
 
-    // 💾 Guardar producto nuevo
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|unique:productos,nombre',
-            'categoria_id' => 'nullable|exists:categorias,id',
-            'cantidad' => 'required|integer|min:0|max:9999', // máximo 4 cifras
-            'precio_unitario' => 'required|numeric|min:0|max:999999.99', // máximo 6 cifras
-        ]);
+    'nombre' => 'required|string|max:100',
+    'descripcion_corta' => 'required|string|max:255',
+    'descripcion' => 'nullable|string',
+    'categoria' => 'required|string',
+    'precio' => 'required|numeric|min:0',
+    'stock' => 'required|integer|min:0',
+    'stock_minimo' => 'required|integer|min:0', // AGREGAR ESTA LÍNEA
+    'ID_proveedor' => 'required|exists:proveedor,ID_proveedor',
+    'imagen' => 'nullable|string|max:255'
+]);
 
         Producto::create($request->all());
+
         return redirect()->route('productos.index')
-                         ->with('success', 'Producto agregado correctamente.');
+            ->with('success', 'Producto creado exitosamente.');
     }
 
-    // ✏️ Formulario para editar producto
-    public function edit(Producto $producto)
+    public function edit($id)
     {
-        $categorias = Categoria::all();
-        return view('productos.edit', compact('producto', 'categorias'));
+        $producto = Producto::findOrFail($id);
+        $proveedores = Proveedor::all();
+        $categorias = ['Gala', 'Casual', 'Fiesta', 'Trabajo', 'Novia'];
+        return view('productos.edit', compact('producto', 'proveedores', 'categorias'));
     }
 
-    // 🔄 Actualizar producto existente
-    public function update(Request $request, Producto $producto)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'nombre' => 'required|unique:productos,nombre,' . $producto->id,
-            'categoria_id' => 'nullable|exists:categorias,id',
-            'cantidad' => 'required|integer|min:0|max:9999',
-            'precio_unitario' => 'required|numeric|min:0|max:999999.99',
-        ]);
+    'nombre' => 'required|string|max:100',
+    'descripcion_corta' => 'required|string|max:255',
+    'descripcion' => 'nullable|string',
+    'categoria' => 'required|string',
+    'precio' => 'required|numeric|min:0',
+    'stock' => 'required|integer|min:0',
+    'stock_minimo' => 'required|integer|min:0', // AGREGAR ESTA LÍNEA
+    'ID_proveedor' => 'required|exists:proveedor,ID_proveedor',
+    'imagen' => 'nullable|string|max:255'
+]);
 
+        $producto = Producto::findOrFail($id);
         $producto->update($request->all());
+
         return redirect()->route('productos.index')
-                         ->with('success', 'Producto actualizado correctamente.');
+            ->with('success', 'Producto actualizado exitosamente.');
     }
 
-    // 🗑️ Eliminar producto
-    public function destroy(Producto $producto)
+    public function destroy($id)
     {
+        $producto = Producto::findOrFail($id);
         $producto->delete();
-        return redirect()->route('productos.index')
-                         ->with('success', 'Producto eliminado correctamente.');
-    }
 
-    // ⚠️ Vista de productos con stock bajo
-    public function bajoStock()
-    {
-        $productos = Producto::whereColumn('cantidad', '<=', 'stock_minimo')->get();
-        return view('productos.bajoStock', compact('productos'));
+        return redirect()->route('productos.index')
+            ->with('success', 'Producto eliminado exitosamente.');
     }
 }
