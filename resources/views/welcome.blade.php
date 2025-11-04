@@ -31,16 +31,19 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#contacto">Contacto</a>
                     </li>
-                    @if(session('nombre'))
+                    @if(session('empleado_nombre'))
                         <li class="nav-item ms-3">
-                            <span class="navbar-text">Hola, {{ session('nombre') }}!</span>
+                            <span class="navbar-text">Hola, {{ session('empleado_nombre') }}!</span>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="btn btn-auth" href="{{ route('logout') }}">Cerrar Sesión</a>
+                            <form action="{{ route('empleado.logout') }}" method="POST" style="display:inline">
+                                @csrf
+                                <button type="submit" class="btn btn-auth">Cerrar Sesión</button>
+                            </form>
                         </li>
                     @else
                         <li class="nav-item ms-2">
-                            <a class="btn btn-auth" href="{{ route('login') }}">Iniciar Sesión</a>
+                            <a class="btn btn-auth" href="{{ route('empleado.login') }}">Iniciar Sesión</a>
                         </li>
                     @endif
                 </ul>

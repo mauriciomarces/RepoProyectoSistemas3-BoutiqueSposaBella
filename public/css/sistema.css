@@ -1,0 +1,127 @@
+/* Estilos generales del sistema basados en la paleta de welcome.blade.php */
+body {
+    font-family: 'Playfair Display', serif;
+    background-color: #EDEEE8;
+}
+
+.navbar {
+    background-color: #EDEEE8;
+    border-bottom: 2px solid #C1BAA2;
+    padding: 0.5rem 0;
+}
+
+.nav-logo {
+    height: 50px;
+    width: auto;
+    transition: transform 0.2s ease;
+}
+
+.nav-logo:hover {
+    transform: scale(1.05);
+}
+
+/* Botones principales */
+.btn-primary {
+    background-color: #8E805E;
+    border-color: #8E805E;
+    color: #EDEEE8;
+}
+
+.btn-primary:hover {
+    background-color: #A19E94;
+    border-color: #A19E94;
+    color: #EDEEE8;
+}
+
+/* Tablas */
+.table {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table thead {
+    background-color: #8E805E;
+    color: #EDEEE8;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(193, 186, 162, 0.1);
+}
+
+/* Tarjetas */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #8E805E;
+    color: #EDEEE8;
+    border-bottom: none;
+}
+
+/* Formularios */
+.form-control:focus {
+    border-color: #8E805E;
+    box-shadow: 0 0 0 0.2rem rgba(142, 128, 94, 0.25);
+}
+
+/* Badges y etiquetas */
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 4px;
+}
+
+.badge-primary {
+    background-color: #8E805E;
+    color: #EDEEE8;
+}
+
+/* Filtros */
+.filtros-container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Gráficos */
+.chart-container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos de impresión */
+@media print {
+    body {
+        background-color: #fff;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    .table {
+        box-shadow: none;
+    }
+    
+    .chart-container {
+        break-inside: avoid;
+        margin: 20px 0;
+        box-shadow: none;
+    }
+    
+    thead {
+        background-color: #8E805E !important;
+        color: #EDEEE8 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

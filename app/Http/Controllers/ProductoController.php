@@ -33,18 +33,29 @@ public function index()
     public function store(Request $request)
     {
         $request->validate([
-    'nombre' => 'required|string|max:100',
-    'descripcion_corta' => 'required|string|max:255',
-    'descripcion' => 'nullable|string',
-    'categoria' => 'required|string',
-    'precio' => 'required|numeric|min:0',
-    'stock' => 'required|integer|min:0',
-    'stock_minimo' => 'required|integer|min:0', // AGREGAR ESTA LÍNEA
-    'ID_proveedor' => 'required|exists:proveedor,ID_proveedor',
-    'imagen' => 'nullable|string|max:255'
-]);
+            'nombre' => 'required|string|max:100',
+            'descripcion_corta' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'categoria' => 'required|string',
+            'precio' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'stock_minimo' => 'required|integer|min:0',
+            'ID_proveedor' => 'required|exists:proveedor,ID_proveedor',
+            'imagen_file' => 'nullable|image|max:5120'
+        ]);
 
-        Producto::create($request->all());
+        $data = $request->only(['nombre','descripcion','descripcion_corta','categoria','precio','stock','stock_minimo','ID_proveedor']);
+
+        // Manejar archivo de imagen (guardar en blob)
+        if ($request->hasFile('imagen_file')) {
+            $file = $request->file('imagen_file');
+            $data['imagen_blob'] = file_get_contents($file->getRealPath());
+            $data['imagen_mime'] = $file->getClientMimeType();
+            // Optionally keep original filename
+            $data['imagen'] = $file->getClientOriginalName();
+        }
+
+        Producto::create($data);
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto creado exitosamente.');
@@ -61,19 +72,29 @@ public function index()
     public function update(Request $request, $id)
     {
         $request->validate([
-    'nombre' => 'required|string|max:100',
-    'descripcion_corta' => 'required|string|max:255',
-    'descripcion' => 'nullable|string',
-    'categoria' => 'required|string',
-    'precio' => 'required|numeric|min:0',
-    'stock' => 'required|integer|min:0',
-    'stock_minimo' => 'required|integer|min:0', // AGREGAR ESTA LÍNEA
-    'ID_proveedor' => 'required|exists:proveedor,ID_proveedor',
-    'imagen' => 'nullable|string|max:255'
-]);
+            'nombre' => 'required|string|max:100',
+            'descripcion_corta' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'categoria' => 'required|string',
+            'precio' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'stock_minimo' => 'required|integer|min:0',
+            'ID_proveedor' => 'required|exists:proveedor,ID_proveedor',
+            'imagen_file' => 'nullable|image|max:5120'
+        ]);
 
         $producto = Producto::findOrFail($id);
-        $producto->update($request->all());
+
+        $data = $request->only(['nombre','descripcion','descripcion_corta','categoria','precio','stock','stock_minimo','ID_proveedor']);
+
+        if ($request->hasFile('imagen_file')) {
+            $file = $request->file('imagen_file');
+            $data['imagen_blob'] = file_get_contents($file->getRealPath());
+            $data['imagen_mime'] = $file->getClientMimeType();
+            $data['imagen'] = $file->getClientOriginalName();
+        }
+
+        $producto->update($data);
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto actualizado exitosamente.');

@@ -141,7 +141,7 @@
         <button type="submit" class="btn btn-register mt-3">Registrarse</button>
 
         <div class="text-center mt-3">
-            <small>¿Ya tienes una cuenta? <a href="{{ route('login') }}">Inicia sesión</a></small>
+            <small>¿Ya tienes una cuenta? <a href="{{ route('empleado.login') }}">Inicia sesión</a></small>
             <br>
             <a href="{{ url('/') }}" class="btn btn-back">Volver al inicio</a>
         </div>

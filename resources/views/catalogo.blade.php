@@ -96,27 +96,72 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearFiltersBtn = document.getElementById('clearFilters');
     const productsContainer = document.getElementById('productsContainer');
 
+    // Helper para decodificar entidades HTML (por si el JSON vino escapado en el atributo)
+    function decodeHtmlEntities(str) {
+        if (!str) return str;
+        const txt = document.createElement('textarea');
+        txt.innerHTML = str;
+        return txt.value;
+    }
+
     // Modal
     productModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
-        const product = JSON.parse(button.getAttribute('data-product'));
+        let product = null;
+        try {
+            const raw = button.getAttribute('data-product');
+            const decoded = decodeHtmlEntities(raw);
+            product = JSON.parse(decoded || raw);
+        } catch (err) {
+            console.error('No se pudo parsear data-product del botón del modal:', err, button && button.getAttribute('data-product'));
+            return; // evitar continuar si no hay datos
+        }
 
         const modal = this;
-        modal.querySelector('.modal-title').textContent = product.nombre;
-        modal.querySelector('.product-title').textContent = product.nombre;
-        modal.querySelector('.product-description').textContent = product.descripcion;
-        modal.querySelector('.product-price').textContent = `Bs. ${parseFloat(product.precio).toFixed(2)}`;
-        modal.querySelector('.modal-img').src = product.imagen;
-        modal.querySelector('.modal-img').alt = product.nombre;
+        modal.querySelector('.modal-title').textContent = product.nombre || '';
+        modal.querySelector('.product-title').textContent = product.nombre || '';
+        modal.querySelector('.product-description').textContent = product.descripcion || '';
+        modal.querySelector('.product-price').textContent = product.precio ? `Bs. ${parseFloat(product.precio).toFixed(2)}` : '';
+        modal.querySelector('.modal-img').src = product.imagen || '';
+        modal.querySelector('.modal-img').alt = product.nombre || '';
 
         const stockText = product.cantidad > 0 
-            ? `Cantidad: ${product.cantidad} | Estado: ${product.estado}`
+            ? `Cantidad: ${product.cantidad} | Estado: ${product.estado || ''}`
             : `<span class="estado-vendido">Vendido</span>`;
         modal.querySelector('.product-stock').innerHTML = stockText;
 
         const buyButton = modal.querySelector('.buy-button');
         buyButton.disabled = product.cantidad === 0;
         buyButton.classList.toggle('disabled', product.cantidad === 0);
+
+        // Preparar acción de Comprar/Fletar: abrir WhatsApp con mensaje predefinido
+        const phone = '59162498914'; // número destino sin +
+        const message = `Hola SposaBella, estoy interesada(o) en el producto: ${product.nombre}`;
+        const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+        // Evitar múltiples listeners: reemplazar onclick
+        buyButton.onclick = function(e) {
+            if (product.cantidad === 0) return;
+            window.open(waUrl, '_blank');
+        };
+    });
+
+    // Manejo de botones 'Comprar/Fletar' directos en la lista (sin abrir modal)
+    productsContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('.direct-buy');
+        if (!btn) return;
+        e.preventDefault();
+        if (btn.disabled) return;
+        try {
+            const raw = btn.getAttribute('data-product');
+            const decoded = decodeHtmlEntities(raw);
+            const product = JSON.parse(decoded || raw);
+            const phone = '59162498914';
+            const message = `Hola SposaBella, estoy interesada(o) en el producto: ${product.nombre}`;
+            const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        } catch (err) {
+            console.error('Error al abrir WhatsApp:', err);
+        }
     });
 
     // Función para aplicar filtros

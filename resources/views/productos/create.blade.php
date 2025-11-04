@@ -55,7 +55,7 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('productos.store') }}" method="POST">
+                        <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             
                             <div class="row">
@@ -167,14 +167,16 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="imagen" class="form-label">URL de Imagen</label>
-                                <input type="text" class="form-control @error('imagen') is-invalid @enderror" 
-                                       id="imagen" name="imagen" value="{{ old('imagen') }}" 
-                                       placeholder="ejemplo: producto.jpg">
-                                <div class="form-text">Nombre del archivo de imagen (debe estar en public/images/productos/)</div>
-                                @error('imagen')
+                                <label for="imagen_file" class="form-label">Imagen del Producto</label>
+                                <input type="file" accept="image/*" class="form-control @error('imagen_file') is-invalid @enderror" 
+                                       id="imagen_file" name="imagen_file">
+                                <div class="form-text">Sube una imagen (máx 5MB). Se guardará en la base de datos.</div>
+                                @error('imagen_file')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div class="mt-2">
+                                    <img id="previewImage" src="" alt="Vista previa" style="max-width:200px; display:none;" />
+                                </div>
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
@@ -193,5 +195,18 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('imagen_file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('previewImage');
+            if (!file) { preview.style.display = 'none'; preview.src = ''; return; }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                preview.src = ev.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        });
+    </script>
 </body>
 </html>

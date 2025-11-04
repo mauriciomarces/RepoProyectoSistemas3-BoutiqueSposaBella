@@ -55,7 +55,7 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('productos.update', $producto->ID_producto) }}" method="POST">
+                        <form action="{{ route('productos.update', $producto->ID_producto) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             
@@ -141,9 +141,18 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="imagen" class="form-label">URL de Imagen</label>
-                                <input type="text" class="form-control" id="imagen" name="imagen"
-                                       value="{{ old('imagen', $producto->imagen) }}" placeholder="ejemplo: producto.jpg">
+                                <label for="imagen_file" class="form-label">Imagen del Producto</label>
+                                <input type="file" accept="image/*" class="form-control" id="imagen_file" name="imagen_file">
+                                <div class="form-text">Si subes una nueva imagen se reemplazará la anterior.</div>
+                                <div class="mt-2">
+                                    @if(!empty($producto->imagen_blob) && !empty($producto->imagen_mime))
+                                        <img id="currentPreview" src="{{ $producto->imagen_data }}" alt="Imagen actual" style="max-width:200px;" />
+                                    @elseif(!empty($producto->imagen) && file_exists(public_path('images/productos/' . $producto->imagen)))
+                                        <img id="currentPreview" src="{{ asset('images/productos/' . $producto->imagen) }}" alt="Imagen actual" style="max-width:200px;" />
+                                    @else
+                                        <img id="currentPreview" src="{{ asset('images/productos/default.png') }}" alt="Imagen actual" style="max-width:200px;" />
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
@@ -162,5 +171,17 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('imagen_file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('currentPreview');
+            if (!file) { return; }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                preview.src = ev.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+    </script>
 </body>
 </html>

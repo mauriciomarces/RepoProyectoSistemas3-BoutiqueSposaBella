@@ -24,13 +24,13 @@
                                 </div>
                             </div>
                             <div class="buttons">
-                                <button type="button" class="btn btn-primary btn-sm" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#productModal"
-                                        data-product='@json($product)'>
+                <button type="button" class="btn btn-primary btn-sm" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#productModal"
+                    data-product='{{ e(json_encode($product)) }}'>
                                     Ver información
                                 </button>
-                                <button class="btn btn-success btn-sm" @if($product['cantidad'] == 0) disabled @endif>
+                                <button class="btn btn-success btn-sm direct-buy" data-product='{{ e(json_encode($product)) }}' @if($product['cantidad'] == 0) disabled @endif>
                                     Comprar/Fletar
                                 </button>
                             </div>
