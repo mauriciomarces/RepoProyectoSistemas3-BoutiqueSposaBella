@@ -19,6 +19,8 @@ class Producto extends Model
         'descripcion_corta',
         'categoria',
         'imagen',
+        'imagen_blob',
+        'imagen_mime',
         'stock',
         'stock_minimo',
         'ID_proveedor',
@@ -28,6 +30,20 @@ class Producto extends Model
     public function proveedor()
     {
         return $this->belongsTo(Proveedor::class, 'ID_proveedor');
+    }
+
+    // Devuelve la imagen en formato data-uri si hay blob, si no intenta usar el nombre de archivo
+    public function getImagenDataAttribute()
+    {
+        if (!empty($this->imagen_blob) && !empty($this->imagen_mime)) {
+            return 'data:' . $this->imagen_mime . ';base64,' . base64_encode($this->imagen_blob);
+        }
+
+        if (!empty($this->imagen) && file_exists(public_path('images/productos/' . $this->imagen))) {
+            return asset('images/productos/' . $this->imagen);
+        }
+
+        return asset('images/productos/default.png');
     }
 
     // MÉTODOS PARA EL CONTROL DE INVENTARIO

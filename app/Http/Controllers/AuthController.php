@@ -12,40 +12,19 @@ class AuthController extends Controller
     // ==========================================
     
     public function showLoginCliente() {
-        return view('auth.login');
+        // El login de clientes ya no está disponible; redirigimos al login de empleados
+        return redirect()->route('empleado.login');
     }
 
     public function loginCliente(Request $request) {
-        $request->validate([
-            'correo' => 'required|email',
-            'password' => 'required|string'
-        ]);
-
-        $user = DB::table('cliente')->where('correo', $request->correo)->first();
-
-        if (!$user) {
-            return back()->with('error', 'Correo no registrado.');
-        }
-
-        $hashedPassword = hash('sha256', $request->password);
-
-        if ($user->password !== $hashedPassword) {
-            return back()->with('error', 'Contraseña incorrecta.');
-        }
-
-        // Guardar sesión de CLIENTE
-        session([
-            'cliente_id' => $user->ID_cliente,
-            'nombre' => $user->nombre,
-            'tipo_usuario' => 'cliente'
-        ]);
-
-        return redirect('/')->with('success', 'Bienvenido ' . $user->nombre . '!');
+        // El login de clientes ya no está activo. Redirigir al login de empleados.
+        return redirect()->route('empleado.login')->with('error', 'El acceso mediante login de clientes ya no está disponible.');
     }
 
     public function logoutCliente() {
         session()->flush();
-        return redirect()->route('login')->with('success', 'Has cerrado sesión correctamente.');
+        // Redirigir al login de empleados (el antiguo login de clientes ya no existe)
+        return redirect()->route('empleado.login')->with('success', 'Has cerrado sesión correctamente.');
     }
 
     // ==========================================

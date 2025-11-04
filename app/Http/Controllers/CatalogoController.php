@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Producto;
 
 class CatalogoController extends Controller
 {
     public function index(Request $request)
     {
-        // Consulta inicial: productos visibles
-        $query = DB::table('producto')->whereNotNull('categoria');
+        // Use Eloquent to fetch productos (so we can use accessor imagen_data)
+        $query = Producto::query();
 
-        // Aplicar filtros
         if ($request->filled('seccion')) {
             $query->where('categoria', $request->input('seccion'));
         }
@@ -29,18 +29,17 @@ class CatalogoController extends Controller
         $sections = [];
 
         foreach ($productos as $prod) {
+            $descripcion = $prod->descripcion ?? '';
             $productoArray = [
                 'id' => $prod->ID_producto,
                 'nombre' => $prod->nombre,
-                'descripcion' => $prod->descripcion,
-                'descripcion_corta' => strlen($prod->descripcion) > 50 ? substr($prod->descripcion, 0, 50) . '...' : $prod->descripcion,
+                'descripcion' => $descripcion,
+                'descripcion_corta' => strlen($descripcion) > 50 ? substr($descripcion, 0, 50) . '...' : $descripcion,
                 'cantidad' => $prod->stock,
                 'estado' => $prod->stock > 0 ? 'Disponible' : 'Vendido',
                 'categoria' => $prod->categoria ?? 'Sin categoría',
                 'precio' => isset($prod->precio) ? $prod->precio : 0,
-                'imagen' => (!empty($prod->imagen) && file_exists(public_path('images/productos/' . $prod->imagen))) 
-                            ? asset('images/productos/' . $prod->imagen) 
-                            : asset('images/productos/default.png')
+                'imagen' => $prod->imagen_data // accessor in model
             ];
 
             $categoria = $productoArray['categoria'];

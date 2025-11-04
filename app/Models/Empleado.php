@@ -10,7 +10,8 @@ class Empleado extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'EMPLEADO';
+    // table name en minúsculas para coincidir con la BD restaurada
+    protected $table = 'empleado';
     protected $primaryKey = 'ID_empleado';
     public $timestamps = false;
 

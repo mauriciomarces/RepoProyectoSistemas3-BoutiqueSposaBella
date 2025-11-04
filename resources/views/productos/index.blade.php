@@ -1,69 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Productos - Confecciones</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Paleta de colores de SposaBella */
-        :root {
-            --color-primary: #8E805E;
-            --color-secondary: #D4C4A0;
-            --color-dark: #2c2c2c;
-        }
-        
-        body {
-            background-color: #f8f9fa;
-        }
-        
-        h1 {
-            color: var(--color-dark);
-        }
-        
-        .btn-primary {
-            background-color: var(--color-primary);
-            border-color: var(--color-primary);
-        }
-        
-        .btn-primary:hover {
-            background-color: #7a6f51;
-            border-color: #7a6f51;
-        }
-        
-        .btn-outline-secondary {
-            color: var(--color-primary);
-            border-color: var(--color-primary);
-        }
-        
-        .btn-outline-secondary:hover {
-            background-color: var(--color-primary);
-            border-color: var(--color-primary);
-            color: white;
-        }
-        
-        .table-dark {
-            background-color: var(--color-dark);
-        }
-        
-        .card {
-            border: none;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        
-        .badge.bg-secondary {
-            background-color: var(--color-secondary) !important;
-            color: var(--color-dark);
-        }
-        
-        .text-success {
-            color: var(--color-primary) !important;
-        }
-    </style>
-</head>
-<body>
+@extends('layouts.app')
+@push('styles')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+@endpush
+
+@section('content')
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-tshirt"></i> Lista de Productos</h1>
@@ -129,7 +69,12 @@
                             <tr class="@if($producto->estaAgotado()) table-danger @elseif($producto->necesitaReposicion()) table-warning @endif">
                                 <td>{{ $producto->ID_producto }}</td>
                                 <td>
-                                    @if(!empty($producto->imagen) && file_exists(public_path('images/productos/' . $producto->imagen)))
+                                    @if(!empty($producto->imagen_blob) && !empty($producto->imagen_mime))
+                                        <img src="{{ $producto->imagen_data }}" 
+                                            alt="{{ $producto->nombre }}" 
+                                            style="width: 50px; height: 50px; object-fit: cover;" 
+                                            class="rounded">
+                                    @elseif(!empty($producto->imagen) && file_exists(public_path('images/productos/' . $producto->imagen)))
                                         <img src="{{ asset('images/productos/' . $producto->imagen) }}" 
                                             alt="{{ $producto->nombre }}" 
                                             style="width: 50px; height: 50px; object-fit: cover;" 
@@ -137,8 +82,6 @@
                                     @else
                                         <i class="fas fa-image fa-2x text-muted"></i>
                                     @endif
-
-
                                 </td>
                                 <td>{{ $producto->nombre }}</td>
                                 <td>{{ $producto->descripcion_corta }}</td>
@@ -239,6 +182,13 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection
+
+@section('scripts')
+<script>
+    // Auto-submit de filtros al cambiar
+    document.querySelectorAll('.filter-control').forEach(control => {
+        control.addEventListener('change', () => control.form.submit());
+    });
+</script>
+@endsection

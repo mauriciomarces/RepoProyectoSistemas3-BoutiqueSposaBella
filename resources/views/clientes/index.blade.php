@@ -1,82 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Gestión de Clientes</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #EDEEE8;
-            font-family: 'Playfair Display', serif;
-        }
-        .navbar {
-            background-color: #EDEEE8;
-            border-bottom: 2px solid #C1BAA2;
-            margin-bottom: 2rem;
-        }
-        .filter-container {
-            background-color: #fff;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-        }
-        .btn-primary {
-            background-color: #8E805E;
-            border-color: #8E805E;
-        }
-        .btn-primary:hover {
-            background-color: #A19E94;
-            border-color: #A19E94;
-        }
-        .btn-outline-secondary {
-            border-color: #8E805E;
-            color: #8E805E;
-        }
-        .btn-outline-secondary:hover {
-            background-color: #8E805E;
-            color: #fff;
-        }
-        .table-container {
-            background-color: #fff;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        }
-        thead {
-            background-color: #8E805E;
-            color: #fff;
-        }
-        .btn-danger {
-            background-color: #D9534F;
-            border-color: #D43F3A;
-        }
-        .btn-danger:hover {
-            background-color: #C9302C;
-            border-color: #AC2925;
-        }
-        .modal-content {
-            border: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .btn-close-white {
-            filter: brightness(0) invert(1);
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container position-relative">
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" height="60">
-            </a>
-            <h1 class="navbar-title position-absolute start-50 translate-middle-x mb-0">Gestión de Clientes</h1>
-        </div>
-    </nav>
+@extends('layouts.app')
+
+@section('content')
 
     <div class="container">
         <div class="row mb-3">
@@ -153,7 +77,14 @@
                                 <!-- Botón Detalle -->
                                 <button type="button" 
                                         class="btn btn-outline-secondary btn-sm btn-detalle" 
-                                        data-cliente-id="{{ $cliente->id }}">
+                                        data-cliente-id="{{ $cliente->id }}"
+                                        data-cliente-nombre="{{ $cliente->nombre }}"
+                                        data-cliente-apellido="{{ $cliente->apellido }}"
+                                        data-cliente-email="{{ $cliente->email }}"
+                                        data-cliente-telefono="{{ $cliente->telefono }}"
+                                        data-cliente-busto="{{ $cliente->busto }}"
+                                        data-cliente-cintura="{{ $cliente->cintura }}"
+                                        data-cliente-cadera="{{ $cliente->cadera }}">
                                     Detalle
                                 </button>
 
@@ -256,7 +187,9 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+@endsection
+
+@section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterForm = document.getElementById('filterForm');
@@ -299,32 +232,77 @@
             function attachDetalleListeners() {
                 document.querySelectorAll('.btn-detalle').forEach(btn => {
                     btn.addEventListener('click', function() {
-                        const clienteId = this.getAttribute('data-cliente-id');
-                        loadClienteDetalle(clienteId);
+                        const clienteData = {
+                            id: this.getAttribute('data-cliente-id'),
+                            nombre: this.getAttribute('data-cliente-nombre'),
+                            apellido: this.getAttribute('data-cliente-apellido'),
+                            email: this.getAttribute('data-cliente-email'),
+                            telefono: this.getAttribute('data-cliente-telefono'),
+                            busto: this.getAttribute('data-cliente-busto'),
+                            cintura: this.getAttribute('data-cliente-cintura'),
+                            cadera: this.getAttribute('data-cliente-cadera')
+                        };
+                        loadClienteDetalle(clienteData);
                     });
                 });
             }
 
-            function loadClienteDetalle(clienteId) {
+            function loadClienteDetalle(clienteData) {
                 const modalBody = document.getElementById('modalBody');
-                modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
                 
+                // Crear HTML con los datos del cliente
+                const detalleHTML = `
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <span class="text-white fs-4 fw-bold">${clienteData.nombre.charAt(0)}${clienteData.apellido.charAt(0)}</span>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">${clienteData.nombre} ${clienteData.apellido}</h5>
+                                    <small class="text-muted">ID: ${clienteData.id}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                        
+                        <div class="col-6">
+                            <label class="text-muted small mb-1">Email</label>
+                            <p class="mb-0 fw-medium">${clienteData.email || 'No especificado'}</p>
+                        </div>
+                        
+                        <div class="col-6">
+                            <label class="text-muted small mb-1">Teléfono</label>
+                            <p class="mb-0 fw-medium">${clienteData.telefono || 'No especificado'}</p>
+                        </div>
+                        
+                        <div class="col-12">
+                            <hr>
+                            <h6 class="mb-3">Medidas</h6>
+                        </div>
+                        
+                        <div class="col-4">
+                            <label class="text-muted small mb-1">Busto</label>
+                            <p class="mb-0 fw-medium">${clienteData.busto} cm</p>
+                        </div>
+                        
+                        <div class="col-4">
+                            <label class="text-muted small mb-1">Cintura</label>
+                            <p class="mb-0 fw-medium">${clienteData.cintura} cm</p>
+                        </div>
+                        
+                        <div class="col-4">
+                            <label class="text-muted small mb-1">Cadera</label>
+                            <p class="mb-0 fw-medium">${clienteData.cadera} cm</p>
+                        </div>
+                    </div>
+                `;
+                
+                modalBody.innerHTML = detalleHTML;
                 detalleModal.show();
-
-                fetch(`/clientes/${clienteId}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                })
-                .then(r => r.text())
-                .then(html => {
-                    modalBody.innerHTML = html;
-                })
-                .catch(err => {
-                    modalBody.innerHTML = '<div class="alert alert-danger">Error al cargar los detalles del cliente</div>';
-                    console.error('Error:', err);
-                });
             }
 
             // Manejar botones de eliminación
@@ -351,5 +329,4 @@
             attachDeleteListeners();
         });
     </script>
-</body>
-</html>
+@endsection
