@@ -1,0 +1,26 @@
+@startuml Diagrama de Caso de Uso - Análisis Financiero
+
+left to right direction
+
+actor "Empleado" as Empleado
+actor "Administradora" as Admin
+
+rectangle "Sistema de Análisis Financiero" {
+    usecase "Ver Resumen Financiero" as UC1
+    usecase "Generar Reporte Mensual" as UC2
+    usecase "Ver Gráficos y Tendencias" as UC3
+    usecase "Exportar Reporte PDF" as UC4
+    usecase "Filtrar Datos por Fecha/Categoría" as UC5
+}
+
+Empleado --> UC1
+Empleado --> UC2
+Empleado --> UC3
+Admin --> UC4
+Admin --> UC5
+
+note right of UC4
+    Solo para administradoras
+end note
+
+@enduml

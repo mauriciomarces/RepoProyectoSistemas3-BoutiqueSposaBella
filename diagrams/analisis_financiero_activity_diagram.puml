@@ -1,0 +1,35 @@
+@startuml Diagrama de Actividades - Análisis Financiero
+
+start
+
+:Empleado solicita análisis financiero;
+
+if (¿Qué tipo de análisis?) then (Resumen Financiero)
+    :Recibir parámetros de filtro (fecha inicio, fecha fin);
+    :Consultar movimientos financieros en rango de fechas;
+    :Calcular totales (ingresos, egresos, utilidad);
+    :Calcular punto de equilibrio;
+    :Mostrar resumen financiero;
+elseif (Reporte Mensual)
+    :Recibir mes y año;
+    :Consultar movimientos del mes específico;
+    :Calcular totales mensuales;
+    :Generar datos para reporte;
+    :Mostrar reporte mensual;
+elseif (Gráficos y Tendencias)
+    :Consultar todos los movimientos;
+    :Procesar datos para gráficos (tendencias, comparativas);
+    :Generar visualizaciones (barras, líneas, pastel);
+    :Mostrar gráficos interactivos;
+else (Exportar Reporte PDF)
+    :Seleccionar tipo de reporte;
+    :Generar datos del reporte;
+    :Configurar formato PDF;
+    :Exportar archivo PDF;
+endif
+
+:Fin del proceso;
+
+stop
+
+@enduml
