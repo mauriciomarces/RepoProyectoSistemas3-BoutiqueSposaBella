@@ -1,0 +1,41 @@
+@startuml Diagrama de Despliegue - Movimientos Financieros
+
+node "Servidor Web" as WebServer {
+    artifact "Laravel Application" as LaravelApp
+    artifact "MovimientoFinancieroController.php" as Controller
+    artifact "MovimientoFinanciero.php" as Model
+    artifact "Vistas de Movimientos" as Views
+}
+
+node "Servidor de Base de Datos" as DBServer {
+    database "MySQL Database" as MySQL
+    artifact "movimientos_financieros" as TableMovimientos
+    artifact "empleados" as TableEmpleados
+}
+
+node "Cliente Web" as Client {
+    artifact "Navegador Web" as Browser
+    artifact "Formularios HTML" as Forms
+}
+
+WebServer --> DBServer : Conexión JDBC/MySQLi
+Client --> WebServer : HTTP/HTTPS
+
+note right of LaravelApp
+    Framework PHP que maneja
+    la lógica CRUD de movimientos
+    financieros y validación
+end note
+
+note right of MySQL
+    Almacena movimientos financieros,
+    empleados y datos relacionados
+end note
+
+note right of Browser
+    Interfaz de usuario para
+    gestión completa de movimientos
+    financieros
+end note
+
+@enduml

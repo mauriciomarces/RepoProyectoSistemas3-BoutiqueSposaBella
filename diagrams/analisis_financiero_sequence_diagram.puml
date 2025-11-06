@@ -1,0 +1,68 @@
+@startuml Diagrama de Secuencia - Análisis Financiero
+
+actor "Empleado" as Empleado
+participant "AnalisisFinancieroController" as Controller
+participant "MovimientoFinanciero" as Movimiento
+participant "Empleado" as EmpleadoModel
+participant "View" as View
+
+== Ver Resumen Financiero ==
+Empleado -> Controller: index(Request $request)
+activate Controller
+
+Controller -> Movimiento: query()->where('fecha', '>=', $fechaInicio)->where('fecha', '<=', $fechaFin)->get()
+activate Movimiento
+Movimiento --> Controller: movimientos
+deactivate Movimiento
+
+Controller -> Controller: calcularTotales($movimientos)
+Controller -> Controller: calcularPuntoEquilibrio($movimientos)
+
+Controller -> View: with(['totales' => $totales, 'puntoEquilibrio' => $puntoEquilibrio])
+activate View
+View --> Controller: vista renderizada
+deactivate View
+
+Controller --> Empleado: vista con resumen financiero
+deactivate Controller
+
+== Generar Reporte Mensual ==
+Empleado -> Controller: reporteMensual($mes)
+activate Controller
+
+Controller -> Movimiento: whereMonth('fecha', $mes)->whereYear('fecha', date('Y'))->get()
+activate Movimiento
+Movimiento --> Controller: movimientos del mes
+deactivate Movimiento
+
+Controller -> Controller: calcularTotales($movimientos)
+Controller -> Controller: calcularPuntoEquilibrio($movimientos)
+
+Controller -> View: with(['movimientos' => $movimientos, 'totales' => $totales])
+activate View
+View --> Controller: vista de reporte mensual
+deactivate View
+
+Controller --> Empleado: reporte mensual generado
+deactivate Controller
+
+== Ver Gráficos y Tendencias ==
+Empleado -> Controller: graficosTendencias()
+activate Controller
+
+Controller -> Movimiento: all()
+activate Movimiento
+Movimiento --> Controller: todos los movimientos
+deactivate Movimiento
+
+Controller -> Controller: procesarDatosParaGraficos($movimientos)
+
+Controller -> View: with(['datosGraficos' => $datosGraficos])
+activate View
+View --> Controller: vista con gráficos
+deactivate View
+
+Controller --> Empleado: gráficos y tendencias
+deactivate Controller
+
+@enduml

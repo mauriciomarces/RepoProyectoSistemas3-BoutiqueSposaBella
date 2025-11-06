@@ -1,0 +1,49 @@
+@startuml Diagrama de Clases - Análisis Financiero
+
+class AnalisisFinancieroController {
+    + index(Request $request): View
+    + reporteMensual($mes): View
+    + graficosTendencias(): View
+    - calcularTotales($movimientos): array
+    - calcularPuntoEquilibrio($movimientos): array
+}
+
+class MovimientoFinanciero {
+    + $table: string
+    + $fillable: array
+    + $dates: array
+    + empleado(): BelongsTo
+}
+
+class Empleado {
+    + $table: string
+    + $fillable: array
+    + movimientosFinancieros(): HasMany
+}
+
+class Request {
+    + input(string $key): mixed
+    + filled(string $key): bool
+}
+
+class View {
+    + with(array $data): View
+}
+
+AnalisisFinancieroController --> MovimientoFinanciero : usa
+AnalisisFinancieroController --> Request : recibe
+AnalisisFinancieroController --> View : retorna
+
+MovimientoFinanciero --> Empleado : pertenece a
+
+note right of AnalisisFinancieroController
+    Controlador principal para
+    análisis financiero
+end note
+
+note right of MovimientoFinanciero
+    Modelo para movimientos
+    financieros (ingresos/egresos)
+end note
+
+@enduml

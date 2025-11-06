@@ -30,13 +30,15 @@
                     @if(session('empleado_id'))
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('clientes.index') }}">Clientes</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('proveedores.index') }}">Proveedores</a></li>
+                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('fletes.index') }}">Fletes</a></li>
+                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('confecciones.index') }}">Confecciones</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('movimientos.index') }}">Movimientos</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('analisis.index') }}">Análisis Financiero</a></li>
                         <li class="nav-item">
                             <form action="{{ route('empleado.logout') }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-auth ms-2">Cerrar sesión</button>
+                                <button type="submit" class="btn btn-auth ms-2" style="background-color: #8E805E; border-color: #8E805E; color: #EDEEE8;">Cerrar sesión</button>
                             </form>
                         </li>
                     @else

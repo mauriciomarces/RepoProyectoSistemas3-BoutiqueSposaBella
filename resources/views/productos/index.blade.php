@@ -176,9 +176,9 @@
 </div>
 
         <div class="mt-3">
-            <a href="{{ route('proveedores.index') }}" class="btn btn-outline-secondary">
+            <!-- <a href="{{ route('proveedores.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-truck"></i> Gestionar Proveedores
-            </a>
+            </a> -->
         </div>
     </div>
 

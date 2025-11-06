@@ -1,0 +1,74 @@
+@startuml Diagrama de Clases - Movimientos Financieros
+
+class MovimientoFinanciero {
+    - ID_movimiento: int
+    - tipo: string
+    - categoria: string
+    - monto: decimal
+    - descripcion: string
+    - fecha: date
+    - ID_empleado: int
+    + fillable: array
+    + table: string
+    + timestamps: bool
+    + calcularTotales(): array
+    + calcularPuntoEquilibrio(): float
+}
+
+class MovimientoFinancieroController {
+    - $model: MovimientoFinanciero
+    + index(Request $request): View
+    + create(): View
+    + store(Request $request): RedirectResponse
+    + show($id): View
+    + edit($id): View
+    + update(Request $request, $id): RedirectResponse
+    + destroy($id): RedirectResponse
+    + report(Request $request): View
+    + pdfReport(Request $request): Response
+}
+
+class Empleado {
+    - ID_empleado: int
+    - nombre: string
+    - correo: string
+    - password: string
+    - ID_rol: int
+    + hasMany movimientos: MovimientoFinanciero
+}
+
+class Request {
+    + validate(array $rules): array
+    + all(): array
+    + input(string $key): mixed
+    + hasFile(string $key): bool
+}
+
+class View {
+    + make(string $view, array $data): View
+    + with(string $key, mixed $value): View
+}
+
+class RedirectResponse {
+    + with(string $key, mixed $value): RedirectResponse
+    + route(string $route): RedirectResponse
+}
+
+MovimientoFinancieroController --> MovimientoFinanciero : uses
+MovimientoFinancieroController --> Request : validates
+MovimientoFinancieroController --> View : returns
+MovimientoFinancieroController --> RedirectResponse : redirects
+MovimientoFinanciero --> Empleado : belongsTo
+
+note right of MovimientoFinanciero
+    Modelo principal que representa
+    movimientos de ingresos y egresos
+    con métodos de cálculo financiero
+end note
+
+note right of MovimientoFinancieroController
+    Controlador CRUD completo con
+    funcionalidades de reporte y PDF
+end note
+
+@enduml

@@ -66,9 +66,9 @@
         </div>
 
         <div class="mt-3">
-            <a href="{{ route('productos.index') }}" class="btn btn-outline-secondary">
+            <!-- <a href="{{ route('productos.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-tshirt"></i> Gestionar Productos
-            </a>
+            </a> -->
         </div>
     </div>
 @endsection

@@ -31,6 +31,7 @@ class ConfeccionController extends Controller
         ]);
 
         DB::table('confeccion')->insert([
+            'ID_cliente' => $validated['ID_cliente'],
             'tipo_confeccion' => $validated['tipo_confeccion'],
             'fecha_inicio' => $validated['fecha_inicio'],
             'fecha_entrega' => $validated['fecha_entrega'] ?? null,

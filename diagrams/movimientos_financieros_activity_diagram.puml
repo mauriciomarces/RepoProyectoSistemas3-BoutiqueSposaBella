@@ -1,0 +1,54 @@
+@startuml Diagrama de Actividad - Movimientos Financieros
+
+start
+
+:Empleado accede a Gestión de Movimientos;
+
+if (¿Qué acción desea realizar?) then (Listar Movimientos)
+    :Mostrar formulario de filtros;
+    :Aplicar filtros de fecha;
+    :Consultar movimientos en BD;
+    :Mostrar lista de movimientos;
+    :Presentar tabla con movimientos;
+else if (Crear Movimiento)
+    :Mostrar formulario de creación;
+    :Ingresar datos del movimiento;
+    :Validar datos;
+    if (¿Datos válidos?) then (Sí)
+        :Guardar movimiento en BD;
+        :Redirigir a lista con mensaje de éxito;
+    else (No)
+        :Mostrar errores de validación;
+        :Regresar al formulario;
+    endif
+else if (Editar Movimiento)
+    :Obtener datos del movimiento;
+    :Mostrar formulario de edición;
+    :Modificar datos necesarios;
+    :Validar cambios;
+    if (¿Cambios válidos?) then (Sí)
+        :Actualizar movimiento en BD;
+        :Redirigir a lista con mensaje de éxito;
+    else (No)
+        :Mostrar errores;
+        :Regresar al formulario;
+    endif
+else if (Eliminar Movimiento)
+    :Mostrar confirmación de eliminación;
+    if (¿Confirmar eliminación?) then (Sí)
+        :Eliminar movimiento de BD;
+        :Redirigir a lista con mensaje de éxito;
+    else (No)
+        :Regresar a lista;
+    endif
+else if (Generar Reporte)
+    :Seleccionar tipo de reporte;
+    :Aplicar filtros;
+    :Generar datos del reporte;
+    :Crear archivo PDF;
+    :Descargar reporte;
+endif
+
+stop
+
+@enduml

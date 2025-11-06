@@ -1,0 +1,122 @@
+@startuml Diagrama de Secuencia - Movimientos Financieros
+
+actor "Empleado" as Empleado
+participant "MovimientoFinancieroController" as Controller
+participant "MovimientoFinanciero" as Model
+participant "View" as View
+participant "Request" as Request
+participant "RedirectResponse" as Redirect
+
+Empleado -> Controller: index(Request $request)
+activate Controller
+
+Controller -> Model: where('fecha', '>=', from)->where('fecha', '<=', to)->get()
+activate Model
+Model --> Controller: movimientos filtrados
+deactivate Model
+
+Controller -> View: view('movimientos.index', compact('movimientos'))
+activate View
+View --> Controller: HTML renderizado
+deactivate View
+
+Controller --> Empleado: Vista con lista de movimientos
+deactivate Controller
+
+Empleado -> Controller: create()
+activate Controller
+
+Controller -> View: view('movimientos.create')
+activate View
+View --> Controller: Formulario de creación
+deactivate View
+
+Controller --> Empleado: Formulario vacío
+deactivate Controller
+
+Empleado -> Controller: store(Request $request)
+activate Controller
+
+Controller -> Request: validate(rules)
+activate Request
+Request --> Controller: datos validados
+deactivate Request
+
+Controller -> Model: new MovimientoFinanciero($data)
+Controller -> Model: save()
+activate Model
+Model --> Controller: movimiento guardado
+deactivate Model
+
+Controller -> Redirect: route('movimientos.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+Empleado -> Controller: edit($id)
+activate Controller
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: movimiento encontrado
+deactivate Model
+
+Controller -> View: view('movimientos.edit', compact('movimiento'))
+activate View
+View --> Controller: Formulario de edición
+deactivate View
+
+Controller --> Empleado: Formulario con datos
+deactivate Controller
+
+Empleado -> Controller: update(Request $request, $id)
+activate Controller
+
+Controller -> Request: validate(rules)
+activate Request
+Request --> Controller: datos validados
+deactivate Request
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: movimiento encontrado
+deactivate Model
+
+Controller -> Model: update($data)
+activate Model
+Model --> Controller: movimiento actualizado
+deactivate Model
+
+Controller -> Redirect: route('movimientos.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+Empleado -> Controller: destroy($id)
+activate Controller
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: movimiento encontrado
+deactivate Model
+
+Controller -> Model: delete()
+activate Model
+Model --> Controller: movimiento eliminado
+deactivate Model
+
+Controller -> Redirect: route('movimientos.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+@enduml

@@ -128,6 +128,12 @@
         </button>
 
         <div class="text-center mt-3">
+            <a href="{{ route('welcome') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door me-1"></i>Volver al Inicio
+            </a>
+        </div>
+
+        <div class="text-center mt-2">
             <small class="text-muted">
                 <i class="bi bi-info-circle me-1"></i>
                 Acceso restringido a personal autorizado

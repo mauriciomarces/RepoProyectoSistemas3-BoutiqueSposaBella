@@ -1,0 +1,54 @@
+@startuml Diagrama de Casos de Uso - Movimientos Financieros
+
+left to right direction
+
+actor "Empleado" as Empleado
+
+rectangle "Sistema de Gestión de Movimientos Financieros" {
+    usecase "Listar Movimientos" as UC1
+    usecase "Crear Movimiento" as UC2
+    usecase "Editar Movimiento" as UC3
+    usecase "Eliminar Movimiento" as UC4
+    usecase "Ver Detalles de Movimiento" as UC5
+    usecase "Filtrar Movimientos por Fecha" as UC6
+    usecase "Generar Reporte PDF" as UC7
+    usecase "Validar Datos de Movimiento" as UC8
+}
+
+Empleado --> UC1
+Empleado --> UC2
+Empleado --> UC3
+Empleado --> UC4
+UC1 --> UC5
+UC1 --> UC6
+UC7 --> UC1
+
+note right of UC1
+    Muestra lista de movimientos
+    con filtros por fecha y tipo
+end note
+
+note right of UC2
+    Registrar nuevo movimiento
+    financiero (ingreso/egreso)
+end note
+
+note right of UC6
+    Aplicar filtros de fecha
+    desde/hasta para consultar
+    movimientos específicos
+end note
+
+note right of UC7
+    Generar y descargar reporte
+    en formato PDF con filtros
+    aplicados
+end note
+
+note right of UC8
+    Validar montos, fechas,
+    categorías y descripciones
+    antes de guardar
+end note
+
+@enduml

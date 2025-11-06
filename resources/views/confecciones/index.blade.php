@@ -31,7 +31,7 @@
                         <tr>
                             <td>{{ $c->ID_confeccion ?? $c->id ?? 'N/A' }}</td>
                             <td>{{ $c->tipo_confeccion }}</td>
-                            <td>{{ optional(DB::table('cliente')->where('ID_cliente', $c->ID_cliente)->first())->nombre ?? 'N/A' }}</td>
+                            <td>{{ isset($c->ID_cliente) ? optional(DB::table('cliente')->where('ID_cliente', $c->ID_cliente)->first())->nombre ?? 'N/A' : 'N/A' }}</td>
                             <td>{{ $c->fecha_inicio }}</td>
                             <td>{{ $c->fecha_entrega }}</td>
                             <td>Bs. {{ number_format($c->costo ?? 0,2) }}</td>

@@ -79,6 +79,6 @@ class AuthController extends Controller
 
     public function logoutEmpleado() {
         session()->flush();
-        return redirect()->route('empleado.login')->with('success', 'Has cerrado sesión correctamente.');
+        return redirect()->route('empleado.login')->with('success', 'Has cerrado sesión correctamente.')->header('Cache-Control', 'no-cache, no-store, must-revalidate')->header('Pragma', 'no-cache')->header('Expires', '0');
     }
 }
