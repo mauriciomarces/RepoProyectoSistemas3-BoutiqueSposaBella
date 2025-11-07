@@ -37,14 +37,25 @@
                     <td>{{ $empleado->ID_seccion }}</td>
                     <td>
                         <a href="{{ route('empleados.edit', $empleado->ID_empleado) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{ route('empleados.destroy', $empleado->ID_empleado) }}" method="POST" style="display:inline">
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="if(confirm('¿Estás seguro de que deseas eliminar a {{ $empleado->nombre }}?')) { document.getElementById('delete-form-{{ $empleado->ID_empleado }}').submit(); }">
+                            Eliminar
+                        </button>
+
+                        <!-- Form oculto para eliminación -->
+                        <form id="delete-form-{{ $empleado->ID_empleado }}"
+                              action="{{ route('empleados.destroy', $empleado->ID_empleado) }}"
+                              method="POST"
+                              style="display: none;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
                         </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+
 @endsection

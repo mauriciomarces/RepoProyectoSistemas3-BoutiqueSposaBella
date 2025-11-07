@@ -51,9 +51,15 @@
                         <button type="button" id="btn-clear-filters" class="btn btn-outline-secondary ms-2">
                             <i class="fas fa-eraser"></i> Limpiar filtros
                         </button>
-                        <button type="button" id="btn-print" class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#pdfOptionsModal">
-                            <i class="fas fa-print"></i> Imprimir
-                        </button>
+                        @php
+                            $empleado = DB::table('empleado')->where('ID_empleado', session('empleado_id'))->first();
+                            $isAdmin = $empleado && $empleado->ID_rol == 1;
+                        @endphp
+                        @if($isAdmin)
+                            <button type="button" id="btn-print" class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#pdfOptionsModal">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                        @endif
 
                     </div>
                 </form>
