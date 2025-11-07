@@ -1,0 +1,35 @@
+@startuml Mobile App Use Case Diagram
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Usuario Móvil" as User
+
+rectangle "Aplicación Móvil Boutique Sposa Bella" {
+    usecase "Iniciar Sesión" as UC1
+    usecase "Ver Catálogo de Productos" as UC2
+    usecase "Registrar Movimiento Financiero" as UC3
+    usecase "Ver Análisis Financiero" as UC4
+    usecase "Gestionar Clientes" as UC5
+    usecase "Ver Fletes" as UC6
+    usecase "Ver Confecciones" as UC7
+    usecase "Ver Reportes de Movimientos" as UC8
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+
+note right of UC1 : Autenticación con credenciales
+note right of UC2 : Navegar por categorías y productos
+note right of UC3 : Registrar ventas, compras, gastos
+note right of UC4 : Ver gráficos y reportes mensuales
+note right of UC5 : Ver, crear, editar clientes
+note right of UC6 : Ver y gestionar fletes
+note right of UC7 : Ver confecciones disponibles
+note right of UC8 : Generar reportes PDF de movimientos
+@enduml

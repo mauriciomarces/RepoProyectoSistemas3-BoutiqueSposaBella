@@ -38,7 +38,7 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Desde</label>
-                        <input type="date" name="from" id="filterFrom" class="form-control" value="{{ request('from') ?: $minDate }}" min="{{ $minDate }}">
+                        <input type="date" name="from" id="filterFrom" class="form-control" value="{{ request('from') ?: $minDate }}">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Hasta</label>

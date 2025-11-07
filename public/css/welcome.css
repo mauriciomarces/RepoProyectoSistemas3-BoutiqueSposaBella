@@ -7,6 +7,9 @@ body {
     background-color: #EDEEE8;
     border-bottom: 2px solid #C1BAA2;
     padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
 }
 
 .nav-logo {

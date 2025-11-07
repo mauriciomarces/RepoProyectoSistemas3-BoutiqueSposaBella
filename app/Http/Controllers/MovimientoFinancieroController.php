@@ -63,12 +63,13 @@ class MovimientoFinancieroController extends Controller
     {
         $validated = $request->validate([
             'tipo' => 'required|in:ingreso,egreso',
-            'monto' => 'required|numeric|min:0',
-            'concepto' => 'required|string|max:255',
+            'monto' => 'required|numeric|min:0.01|max:999999999.99|regex:/^\d+(\.\d{1,2})?$/',
+            'concepto' => 'required|string|max:255|regex:/^[^\s]/',
             'descripcion' => 'nullable|string',
             'fecha' => 'required|date',
             'categoria' => 'required|string|max:255',
-            'referencia' => 'nullable|string|max:255'
+            'referencia' => 'nullable|string|max:255',
+            'ID_empleado' => 'nullable|exists:empleado,ID_empleado'
         ]);
 
         // asignar empleado si hay sesión

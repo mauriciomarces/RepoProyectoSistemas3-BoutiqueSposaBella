@@ -17,36 +17,17 @@ class ClienteController extends Controller
         if ($request->filled('nombre')) {
             $query->where('nombre', 'like', '%' . $request->nombre . '%');
         }
-        if ($request->filled('busto')) {
-            $query->where('busto', $request->busto);
+        if ($request->filled('busto') && is_numeric($request->busto)) {
+            $query->where('busto', '=', $request->busto);
         }
-        if ($request->filled('cintura')) {
-            $query->where('cintura', $request->cintura);
+        if ($request->filled('cintura') && is_numeric($request->cintura)) {
+            $query->where('cintura', '=', $request->cintura);
         }
-        if ($request->filled('cadera')) {
-            $query->where('cadera', $request->cadera);
+        if ($request->filled('cadera') && is_numeric($request->cadera)) {
+            $query->where('cadera', '=', $request->cadera);
         }
 
-        $clientes = $query->get()->map(function($cliente) {
-            return (object)[
-                'id' => $cliente->ID_cliente,
-                'nombre' => $cliente->nombre,
-                'apellido' => '',
-                'correo' => $cliente->correo,
-                'email' => $cliente->correo,
-                'telefono' => $cliente->telefono,
-                'direccion' => $cliente->direccion,
-                'busto' => $cliente->busto ?? 0,
-                'cintura' => $cliente->cintura ?? 0,
-                'cadera' => $cliente->cadera ?? 0,
-                'medidas' => (object)[
-                    'busto' => $cliente->busto ?? 0,
-                    'cintura' => $cliente->cintura ?? 0,
-                    'cadera' => $cliente->cadera ?? 0
-                ],
-                'historial_compras' => []
-            ];
-        });
+        $clientes = $query->get();
 
         if ($request->ajax()) {
             return view('clientes.partials.clients_table', compact('clientes'))->render();
@@ -63,13 +44,25 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255|regex:/^[a-zA-ZÀ-ÿ\s]+$/',
             'correo' => 'required|email|max:255',
-            'telefono' => 'required|string|max:20',
-            'busto' => 'required|numeric',
-            'cintura' => 'required|numeric',
-            'cadera' => 'required|numeric',
+            'telefono' => 'required|string|regex:/^[67]\d{7}$/',
+            'busto' => 'required|numeric|min:30|max:200',
+            'cintura' => 'required|numeric|min:20|max:200',
+            'cadera' => 'required|numeric|min:30|max:200',
         ]);
+
+        // Check if client exists in soft deleted records
+        $existingDeleted = Cliente::onlyTrashed()
+            ->where('correo', $request->correo)
+            ->first();
+
+        if ($existingDeleted) {
+            return redirect()->back()
+                ->withInput()
+                ->with('warning', 'Ya existe un cliente con este correo en la papelera. ¿Desea restaurarlo?')
+                ->with('restore_id', $existingDeleted->ID_cliente);
+        }
 
         Cliente::create([
             'nombre' => $request->nombre,

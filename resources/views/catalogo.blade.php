@@ -7,17 +7,48 @@
 <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="{{ asset('css/welcome.css') }}" rel="stylesheet">
 <link href="{{ asset('css/catalogo.css') }}" rel="stylesheet">
 </head>
 <body style="background-color:#EDEEE8;">
 
 <nav class="navbar navbar-expand-lg">
-<div class="container position-relative">
-    <a class="navbar-brand" href="{{ url('/') }}">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo Boutique Sposa Bella" class="nav-logo">
-    </a>
-    <h1 class="navbar-title position-absolute start-50 translate-middle-x mb-0">Catálogo de Productos</h1>
-</div>
+    <div class="container">
+        <a class="navbar-brand" href="{{ url('/') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Boutique Sposa Bella" class="nav-logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/catalogo') }}">Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/') }}#nosotros">Nosotros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/') }}#contacto">Contacto</a>
+                </li>
+                @if(session('empleado_nombre'))
+                    <li class="nav-item ms-3">
+                        <span class="navbar-text">Hola, {{ session('empleado_nombre') }}!</span>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <form action="{{ route('empleado.logout') }}" method="POST" style="display:inline">
+                            @csrf
+                            <button type="submit" class="btn btn-auth">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                @else
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-auth" href="{{ route('empleado.login') }}">Iniciar Sesión</a>
+                    </li>
+                @endif
+            </ul>
+        </div>
+    </div>
 </nav>
 
 <div class="container py-4">

@@ -4,6 +4,7 @@
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-truck"></i> Lista de Proveedores</h1>
+            <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
             <a href="{{ route('proveedores.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nuevo Proveedor
             </a>

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable; // para login
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Empleado extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     // table name en minúsculas para coincidir con la BD restaurada
     protected $table = 'empleado';
@@ -22,4 +23,6 @@ class Empleado extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    protected $dates = ['deleted_at'];
 }
