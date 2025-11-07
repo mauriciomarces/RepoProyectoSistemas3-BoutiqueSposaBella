@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cliente extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'cliente';
     protected $primaryKey = 'ID_cliente';
@@ -29,4 +30,6 @@ class Cliente extends Model
     protected $hidden = [
         'password',
     ];
+
+    protected $dates = ['deleted_at'];
 }

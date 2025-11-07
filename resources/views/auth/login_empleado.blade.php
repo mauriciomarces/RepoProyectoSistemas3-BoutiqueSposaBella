@@ -110,14 +110,14 @@
             <label for="correo" class="form-label">
                 <i class="bi bi-envelope-fill me-1"></i>Correo Corporativo
             </label>
-            <input type="email" id="correo" name="correo" class="form-control" placeholder="nombre@spozabella.com" required autofocus>
+            <input type="email" id="correo" name="correo" class="form-control" placeholder="nombre@spozabella.com" required autofocus oninput="this.value = this.value.trimStart();">
         </div>
 
         <div class="mb-3 position-relative">
             <label for="password" class="form-label">
                 <i class="bi bi-lock-fill me-1"></i>Contraseña
             </label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="********" required>
+            <input type="password" id="password" name="password" class="form-control" placeholder="********" required oninput="this.value = this.value.trimStart();">
             <span class="toggle-password" onclick="togglePassword()">
                 <i class="bi bi-eye-slash-fill" id="toggleIcon"></i>
             </span>

@@ -8,7 +8,7 @@
             <img src="{{ asset('images/logo.png') }}" alt="Logo" class="print-logo mb-3" style="height: 100px">
             <h1 style="color: #8E805E">Reporte de Movimientos Financieros</h1>
             <p class="text-muted">
-                Periodo: {{ request('from', $minDate) }} al {{ request('to', now()->toDateString()) }}
+                Periodo: {{ request('from') ?: 'Sin límite' }} al {{ request('to') ?: now()->toDateString() }}
             </p>
         </div>
     </div>

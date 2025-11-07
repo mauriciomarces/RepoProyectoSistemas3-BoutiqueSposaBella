@@ -40,6 +40,19 @@
     </nav>
 
     <div class="container">
+        @if(session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ session('warning') }}
+                @if(session('restore_id'))
+                    <br>
+                    <a href="{{ route('trash.restore', ['type' => 'cliente', 'id' => session('restore_id')]) }}" class="btn btn-sm btn-outline-primary mt-2">
+                        <i class="fas fa-undo"></i> Restaurar Cliente
+                    </a>
+                @endif
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('clientes.store') }}" method="POST">
@@ -48,7 +61,10 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Nombre Completo</label>
-                                <input type="text" class="form-control" name="nombre" required>
+                                <input type="text" class="form-control" name="nombre" id="nombre" required pattern="^[a-zA-ZÀ-ÿ\s]+$" title="Solo se permiten letras y espacios">
+                                <div class="invalid-feedback">
+                                    Solo se permiten letras y espacios.
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Correo</label>
@@ -56,7 +72,10 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" name="telefono" required>
+                                <input type="tel" class="form-control" name="telefono" id="telefono" required pattern="^[67]\d{7}$" maxlength="8" title="El teléfono debe comenzar con 6 o 7 y tener exactamente 8 dígitos" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 8); if (this.value && !/^[67]/.test(this.value)) { this.value = ''; }">
+                                <div class="invalid-feedback">
+                                    El teléfono debe comenzar con 6 o 7 y tener exactamente 8 dígitos.
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Dirección</label>
@@ -67,15 +86,15 @@
                             <h5>Medidas</h5>
                             <div class="mb-3">
                                 <label class="form-label">Busto (cm)</label>
-                                <input type="number" class="form-control" name="busto" required>
+                                <input type="number" class="form-control" name="busto" required min="30" max="200" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Cintura (cm)</label>
-                                <input type="number" class="form-control" name="cintura" required>
+                                <input type="number" class="form-control" name="cintura" required min="20" max="200" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Cadera (cm)</label>
-                                <input type="number" class="form-control" name="cadera" required>
+                                <input type="number" class="form-control" name="cadera" required min="30" max="200" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
                             </div>
                         </div>
                     </div>
@@ -91,5 +110,56 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nombreInput = document.getElementById('nombre');
+            const telefonoInput = document.getElementById('telefono');
+
+            // Validación en tiempo real para nombre
+            nombreInput.addEventListener('input', function() {
+                const value = this.value;
+                if (value && !/^[a-zA-ZÀ-ÿ\s]+$/.test(value)) {
+                    this.setCustomValidity('Solo se permiten letras y espacios');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                }
+            });
+
+            // Validación en tiempo real para teléfono
+            telefonoInput.addEventListener('input', function() {
+                const value = this.value;
+                if (value && !/^[67]\d{0,7}$/.test(value)) {
+                    this.setCustomValidity('El teléfono debe comenzar con 6 o 7 y contener solo números');
+                    this.classList.add('is-invalid');
+                } else if (value.length > 8) {
+                    this.setCustomValidity('El teléfono no puede tener más de 8 dígitos');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                }
+            });
+
+            // Validación final antes del envío
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const nombre = nombreInput.value.trim();
+                const telefono = telefonoInput.value.trim();
+
+                if (nombre && !/^[a-zA-ZÀ-ÿ\s]+$/.test(nombre)) {
+                    e.preventDefault();
+                    nombreInput.focus();
+                    return false;
+                }
+
+                if (telefono && !/^[67]\d{7}$/.test(telefono)) {
+                    e.preventDefault();
+                    telefonoInput.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

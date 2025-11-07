@@ -28,19 +28,38 @@
             <form id="filterForm" class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label">Nombre</label>
-                    <input type="text" class="form-control" name="nombre" placeholder="Buscar por nombre">
+                    <input type="text" 
+                        class="form-control" 
+                        name="nombre" 
+                        value="{{ request('nombre') }}"
+                        placeholder="Buscar por nombre">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Busto (cm)</label>
-                    <input type="number" class="form-control" name="busto" placeholder="Ej: 90">
+                    <input type="number" 
+                        class="form-control" 
+                        name="busto" 
+                        value="{{ request('busto') }}"
+                        placeholder="Ej: 90" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Cintura (cm)</label>
-                    <input type="number" class="form-control" name="cintura" placeholder="Ej: 70">
+                    <input type="number" 
+                        class="form-control" 
+                        name="cintura" 
+                        value="{{ request('cintura') }}"
+                        placeholder="Ej: 70" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Cadera (cm)</label>
-                    <input type="number" class="form-control" name="cadera" placeholder="Ej: 95">
+                    <input type="number" 
+                        class="form-control" 
+                        name="cadera" 
+                        value="{{ request('cadera') }}"
+                        placeholder="Ej: 95" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
                 </div>
                 <div class="col-12 d-flex gap-2 mt-2">
                     <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -66,8 +85,8 @@
                 <tbody>
                     @forelse($clientes as $cliente)
                     <tr>
-                        <td>{{ $cliente->nombre }} {{ $cliente->apellido }}</td>
-                        <td>{{ $cliente->email }}</td>
+                        <td>{{ $cliente->nombre }}</td>
+                        <td>{{ $cliente->correo }}</td>
                         <td>{{ $cliente->telefono }}</td>
                         <td>{{ $cliente->busto }} cm</td>
                         <td>{{ $cliente->cintura }} cm</td>
@@ -79,7 +98,7 @@
                                         class="btn btn-outline-secondary btn-sm btn-detalle" 
                                         data-cliente-id="{{ $cliente->id }}"
                                         data-cliente-nombre="{{ $cliente->nombre }}"
-                                        data-cliente-apellido="{{ $cliente->apellido }}"
+                                        data-cliente-apellido=""
                                         data-cliente-email="{{ $cliente->email }}"
                                         data-cliente-telefono="{{ $cliente->telefono }}"
                                         data-cliente-busto="{{ $cliente->busto }}"
@@ -89,23 +108,23 @@
                                 </button>
 
                                 <!-- Botón Editar -->
-                                <a href="{{ route('clientes.edit', $cliente->id) }}" 
+                                <a href="{{ route('clientes.edit', $cliente->ID_cliente) }}"
                                    class="btn btn-primary btn-sm">
                                     Editar
                                 </a>
 
                                 <!-- Botón Eliminar -->
-                                <button type="button" 
-                                        class="btn btn-danger btn-sm btn-eliminar" 
-                                        data-cliente-id="{{ $cliente->id }}"
+                                <button type="button"
+                                        class="btn btn-danger btn-sm btn-eliminar"
+                                        data-cliente-id="{{ $cliente->ID_cliente }}"
                                         data-cliente-nombre="{{ $cliente->nombre }} {{ $cliente->apellido }}">
                                     Eliminar
                                 </button>
                                 
                                 <!-- Form oculto para eliminación -->
-                                <form id="delete-form-{{ $cliente->id }}" 
-                                      action="{{ route('clientes.destroy', $cliente->id) }}" 
-                                      method="POST" 
+                                <form id="delete-form-{{ $cliente->ID_cliente }}"
+                                      action="{{ route('clientes.destroy', $cliente->ID_cliente) }}"
+                                      method="POST"
                                       style="display: none;">
                                     @csrf
                                     @method('DELETE')
@@ -192,141 +211,136 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const filterForm = document.getElementById('filterForm');
-            const clientsContainer = document.getElementById('clientsContainer');
-            const clearBtn = document.getElementById('clearFilters');
-            const detalleModal = new bootstrap.Modal(document.getElementById('detalleClienteModal'));
-            const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-            let clienteIdToDelete = null;
+        const filterForm = document.getElementById('filterForm');
+        const clearBtn = document.getElementById('clearFilters');
+        const detalleModal = new bootstrap.Modal(document.getElementById('detalleClienteModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        let clienteIdToDelete = null;
 
-            // Manejar filtros
-            filterForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                applyFilters();
-            });
+        // Manejar filtros - Recarga página (método más confiable)
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
 
-            clearBtn.addEventListener('click', function() {
-                filterForm.reset();
-                applyFilters();
-            });
+        clearBtn.addEventListener('click', function() {
+            window.location.href = '/clientes';
+        });
 
-            function applyFilters() {
-                const params = new URLSearchParams(new FormData(filterForm)).toString();
-                fetch(`/clientes?${params}`, { 
-                    headers: { 
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                })
-                .then(r => r.text())
-                .then(html => {
-                    clientsContainer.innerHTML = html;
-                    // Re-attach event listeners to new buttons
-                    attachDetalleListeners();
-                    attachDeleteListeners();
-                })
-                .catch(err => console.error('Error al filtrar:', err));
+        function applyFilters() {
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams();
+
+            // Solo agregar valores no vacíos
+            for (let [key, value] of formData.entries()) {
+                if (value.trim() !== '') {
+                    params.append(key, value);
+                }
             }
 
-            // Manejar botones de detalle
-            function attachDetalleListeners() {
-                document.querySelectorAll('.btn-detalle').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const clienteData = {
-                            id: this.getAttribute('data-cliente-id'),
-                            nombre: this.getAttribute('data-cliente-nombre'),
-                            apellido: this.getAttribute('data-cliente-apellido'),
-                            email: this.getAttribute('data-cliente-email'),
-                            telefono: this.getAttribute('data-cliente-telefono'),
-                            busto: this.getAttribute('data-cliente-busto'),
-                            cintura: this.getAttribute('data-cliente-cintura'),
-                            cadera: this.getAttribute('data-cliente-cadera')
-                        };
-                        loadClienteDetalle(clienteData);
-                    });
+            // Construir URL y recargar
+            const url = params.toString() ? `/clientes?${params.toString()}` : '/clientes';
+            window.location.href = url;
+        }
+
+        // Manejar botones de detalle
+        function attachDetalleListeners() {
+            document.querySelectorAll('.btn-detalle').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const clienteData = {
+                        id: this.getAttribute('data-cliente-id'),
+                        nombre: this.getAttribute('data-cliente-nombre'),
+                        apellido: this.getAttribute('data-cliente-apellido') || '',
+                        email: this.getAttribute('data-cliente-email'),
+                        telefono: this.getAttribute('data-cliente-telefono'),
+                        busto: this.getAttribute('data-cliente-busto'),
+                        cintura: this.getAttribute('data-cliente-cintura'),
+                        cadera: this.getAttribute('data-cliente-cadera')
+                    };
+                    loadClienteDetalle(clienteData);
                 });
-            }
+            });
+        }
 
-            function loadClienteDetalle(clienteData) {
-                const modalBody = document.getElementById('modalBody');
-                
-                // Crear HTML con los datos del cliente
-                const detalleHTML = `
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                    <span class="text-white fs-4 fw-bold">${clienteData.nombre.charAt(0)}${clienteData.apellido.charAt(0)}</span>
-                                </div>
-                                <div class="ms-3">
-                                    <h5 class="mb-0">${clienteData.nombre} ${clienteData.apellido}</h5>
-                                    <small class="text-muted">ID: ${clienteData.id}</small>
-                                </div>
+        function loadClienteDetalle(clienteData) {
+            const modalBody = document.getElementById('modalBody');
+            
+            const detalleHTML = `
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fs-4 fw-bold">${clienteData.nombre.charAt(0)}${clienteData.apellido ? clienteData.apellido.charAt(0) : ''}</span>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-0">${clienteData.nombre} ${clienteData.apellido}</h5>
+                                <small class="text-muted">ID: ${clienteData.id}</small>
                             </div>
                         </div>
-                        
-                        <div class="col-12">
-                            <hr>
-                        </div>
-                        
-                        <div class="col-6">
-                            <label class="text-muted small mb-1">Email</label>
-                            <p class="mb-0 fw-medium">${clienteData.email || 'No especificado'}</p>
-                        </div>
-                        
-                        <div class="col-6">
-                            <label class="text-muted small mb-1">Teléfono</label>
-                            <p class="mb-0 fw-medium">${clienteData.telefono || 'No especificado'}</p>
-                        </div>
-                        
-                        <div class="col-12">
-                            <hr>
-                            <h6 class="mb-3">Medidas</h6>
-                        </div>
-                        
-                        <div class="col-4">
-                            <label class="text-muted small mb-1">Busto</label>
-                            <p class="mb-0 fw-medium">${clienteData.busto} cm</p>
-                        </div>
-                        
-                        <div class="col-4">
-                            <label class="text-muted small mb-1">Cintura</label>
-                            <p class="mb-0 fw-medium">${clienteData.cintura} cm</p>
-                        </div>
-                        
-                        <div class="col-4">
-                            <label class="text-muted small mb-1">Cadera</label>
-                            <p class="mb-0 fw-medium">${clienteData.cadera} cm</p>
-                        </div>
                     </div>
-                `;
-                
-                modalBody.innerHTML = detalleHTML;
-                detalleModal.show();
-            }
+                    
+                    <div class="col-12">
+                        <hr>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="text-muted small mb-1">Email</label>
+                        <p class="mb-0 fw-medium">${clienteData.email || 'No especificado'}</p>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="text-muted small mb-1">Teléfono</label>
+                        <p class="mb-0 fw-medium">${clienteData.telefono || 'No especificado'}</p>
+                    </div>
+                    
+                    <div class="col-12">
+                        <hr>
+                        <h6 class="mb-3">Medidas</h6>
+                    </div>
+                    
+                    <div class="col-4">
+                        <label class="text-muted small mb-1">Busto</label>
+                        <p class="mb-0 fw-medium">${clienteData.busto} cm</p>
+                    </div>
+                    
+                    <div class="col-4">
+                        <label class="text-muted small mb-1">Cintura</label>
+                        <p class="mb-0 fw-medium">${clienteData.cintura} cm</p>
+                    </div>
+                    
+                    <div class="col-4">
+                        <label class="text-muted small mb-1">Cadera</label>
+                        <p class="mb-0 fw-medium">${clienteData.cadera} cm</p>
+                    </div>
+                </div>
+            `;
+            
+            modalBody.innerHTML = detalleHTML;
+            detalleModal.show();
+        }
 
-            // Manejar botones de eliminación
-            function attachDeleteListeners() {
-                document.querySelectorAll('.btn-eliminar').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        clienteIdToDelete = this.getAttribute('data-cliente-id');
-                        const clienteNombre = this.getAttribute('data-cliente-nombre');
-                        document.getElementById('deleteClienteName').textContent = clienteNombre;
-                        deleteModal.show();
-                    });
+        // Manejar botones de eliminación
+        function attachDeleteListeners() {
+            document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    clienteIdToDelete = this.getAttribute('data-cliente-id');
+                    const clienteNombre = this.getAttribute('data-cliente-nombre');
+                    document.getElementById('deleteClienteName').textContent = clienteNombre;
+                    deleteModal.show();
                 });
-            }
-
-            // Confirmar eliminación
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-                if (clienteIdToDelete) {
-                    document.getElementById('delete-form-' + clienteIdToDelete).submit();
-                }
             });
+        }
 
-            // Initial attachment
-            attachDetalleListeners();
-            attachDeleteListeners();
+        // Confirmar eliminación
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (clienteIdToDelete) {
+                document.getElementById('delete-form-' + clienteIdToDelete).submit();
+            }
         });
+
+        // Adjuntar listeners iniciales
+        attachDetalleListeners();
+        attachDeleteListeners();
+    });
     </script>
 @endsection

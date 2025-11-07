@@ -13,6 +13,8 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\FleteController;
 use App\Http\Controllers\MovimientoFinancieroController;
 use App\Http\Controllers\AnalisisFinancieroController;
+use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\TrashController;
 
 
 // ============================================
@@ -55,9 +57,12 @@ Route::middleware(['check.employee'])->group(function () {
     // ============================================
     // EMPLEADOS
     // ============================================
-    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
-    Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-    Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+    Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
+    Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
+    Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
+    Route::get('/empleados/{id}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
+    Route::put('/empleados/{id}', [EmpleadoController::class, 'update'])->name('empleados.update');
+    Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
 
     // ============================================
     // PRODUCTOS
@@ -105,7 +110,7 @@ Route::middleware(['check.employee'])->group(function () {
     // ANÁLISIS FINANCIERO
     // ============================================
     Route::get('/analisis-financiero', [AnalisisFinancieroController::class, 'index'])->name('analisis.index');
-    Route::get('/analisis-financiero/reporte-mensual/{mes?}', [AnalisisFinancieroController::class, 'reporteMensual'])->name('analisis.reporte-mensual');
+    Route::get('/analisis-financiero/reporte-mensual', [AnalisisFinancieroController::class, 'reporteMensual'])->name('analisis.reporte-mensual');
     Route::get('/analisis-financiero/graficos', [AnalisisFinancieroController::class, 'graficosTendencias'])->name('analisis.graficos');
     // Reportes combinados / Confecciones module
     Route::get('/confecciones', [\App\Http\Controllers\ConfeccionController::class, 'index'])->name('confecciones.index');
@@ -121,6 +126,13 @@ Route::middleware(['check.employee'])->group(function () {
     Route::get('/fletes/{id}/edit', [FleteController::class, 'edit'])->name('fletes.edit');
     Route::put('/fletes/{id}', [FleteController::class, 'update'])->name('fletes.update');
     Route::delete('/fletes/{id}', [FleteController::class, 'destroy'])->name('fletes.destroy');
+
+    // ============================================
+    // PAPELERA DE RECICLAJE
+    // ============================================
+    Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
+    Route::patch('/trash/{type}/{id}/restore', [TrashController::class, 'restore'])->name('trash.restore');
+    Route::delete('/trash/{type}/{id}/force-delete', [TrashController::class, 'forceDelete'])->name('trash.force-delete');
 });
 
 // ============================================

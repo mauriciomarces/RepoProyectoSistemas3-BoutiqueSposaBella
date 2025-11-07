@@ -32,6 +32,9 @@
                         <a class="nav-link" href="#contacto">Contacto</a>
                     </li>
                     @if(session('empleado_nombre'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('productos.index') }}">Sistema</a>
+                        </li>
                         <li class="nav-item ms-3">
                             <span class="navbar-text">Hola, {{ session('empleado_nombre') }}!</span>
                         </li>

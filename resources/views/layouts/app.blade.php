@@ -28,6 +28,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @if(session('empleado_id'))
+                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleados.index') }}">Empleados</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('clientes.index') }}">Clientes</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('proveedores.index') }}">Proveedores</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>
@@ -35,6 +36,7 @@
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('confecciones.index') }}">Confecciones</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('movimientos.index') }}">Movimientos</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('analisis.index') }}">Análisis Financiero</a></li>
+                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('trash.index') }}">Papelera</a></li>
                         <li class="nav-item">
                             <form action="{{ route('empleado.logout') }}" method="POST" class="d-inline">
                                 @csrf

@@ -102,14 +102,24 @@ class AnalisisFinancieroController extends Controller
         ));
     }
 
-    public function reporteMensual($mes = null)
+    public function reporteMensual(Request $request)
     {
-        if (!$mes) {
+        $from = $request->input('from');
+        $to = $request->input('to');
+
+        // Si no se proporcionan fechas, mostrar el formulario vacío
+        if (!$from || !$to) {
             $mes = Carbon::now()->format('Y-m');
+            return view('analisis_financiero.reporte_mensual', compact('mes'));
         }
 
-        $inicio = Carbon::createFromFormat('Y-m', $mes)->startOfMonth();
-        $fin = Carbon::createFromFormat('Y-m', $mes)->endOfMonth();
+        $inicio = Carbon::parse($from);
+        $fin = Carbon::parse($to);
+
+        // Validar que la fecha desde no sea mayor que hasta
+        if ($inicio > $fin) {
+            return redirect()->back()->with('error', 'La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
+        }
 
         // Obtener movimientos desde la tabla movimiento_financiero
         $movimientos = MovimientoFinanciero::whereBetween('fecha', [$inicio, $fin])
@@ -127,12 +137,17 @@ class AnalisisFinancieroController extends Controller
             'balance' => $ventas->sum('monto') - ($compras->sum('monto') + $gastos->sum('monto'))
         ];
 
+        // Usar el mes actual como fallback para compatibilidad
+        $mes = Carbon::now()->format('Y-m');
+
         return view('analisis_financiero.reporte_mensual', compact(
             'ventas',
             'compras',
             'gastos',
             'resumen',
-            'mes'
+            'mes',
+            'from',
+            'to'
         ));
     }
 
