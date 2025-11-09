@@ -28,7 +28,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @if(session('empleado_id'))
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleados.index') }}">Empleados</a></li>
+                        @php
+                            $empleado = DB::table('empleado')->where('ID_empleado', session('empleado_id'))->first();
+                            $isAdmin = $empleado && $empleado->ID_rol == 1;
+                        @endphp
+                        @if($isAdmin)
+                            <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleados.index') }}">Empleados</a></li>
+                        @endif
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('clientes.index') }}">Clientes</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('proveedores.index') }}">Proveedores</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>

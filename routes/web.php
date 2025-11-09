@@ -55,7 +55,7 @@ Route::middleware(['check.employee'])->group(function () {
     Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
     
     // ============================================
-    // EMPLEADOS
+    // EMPLEADOS (SOLO ADMINISTRADORES)
     // ============================================
     Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
     Route::get('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');

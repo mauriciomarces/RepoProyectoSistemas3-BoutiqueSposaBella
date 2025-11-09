@@ -294,10 +294,11 @@
                     <?php
                         $data = $categorias['ingresos'] ?? [];
                         $total = array_sum($data) ?: 1;
-                        $cx = 150; $cy = 120; $r = 100;
-                        $palette = ['#8E805E','#A19E94','#C1BAA2','#7A6E4E','#8F8C83','#ADA692','#D6D7D1'];
+                        $cx = 120; $cy = 100; $r = 80;
+                        // Paleta intuitiva: verdes para ingresos
+                        $palette = ['#28a745','#20c997','#17a2b8','#6f42c1','#e83e8c','#fd7e14','#ffc107'];
                     ?>
-                    <svg width="320" height="260" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="280" height="220" xmlns="http://www.w3.org/2000/svg">
                         <rect x="0" y="0" width="100%" height="100%" fill="#ffffff" />
                         <circle cx="<?php echo $cx;?>" cy="<?php echo $cy;?>" r="<?php echo $r;?>" fill="#f7f7f7" stroke="#e0e0e0" />
                         <?php
@@ -306,27 +307,27 @@
                             foreach($data as $label => $value) {
                                 $percentage = $value / $total;
                                 $endAngle = $startAngle + ($percentage * 360);
-                                
+
                                 // Convertir ángulos a radianes
                                 $startRad = deg2rad($startAngle - 90);
                                 $endRad = deg2rad($endAngle - 90);
-                                
+
                                 // Calcular puntos
                                 $x1 = $cx + cos($startRad) * $r;
                                 $y1 = $cy + sin($startRad) * $r;
                                 $x2 = $cx + cos($endRad) * $r;
                                 $y2 = $cy + sin($endRad) * $r;
-                                
+
                                 // Determinar si el arco es mayor a 180 grados
                                 $largeArcFlag = $endAngle - $startAngle > 180 ? 1 : 0;
-                                
+
                                 $color = $palette[$i % count($palette)];
-                                
+
                                 // Crear el path para la sección del pie
                                 $d = "M{$cx},{$cy} L{$x1},{$y1} A{$r},{$r} 0 {$largeArcFlag},1 {$x2},{$y2} Z";
-                                
+
                                 echo "<path d=\"{$d}\" fill=\"{$color}\" stroke=\"white\" stroke-width=\"1\"/>";
-                                
+
                                 $startAngle = $endAngle;
                                 $i++;
                             }
@@ -348,10 +349,11 @@
                     <?php
                         $data = $categorias['egresos'] ?? [];
                         $total = array_sum($data) ?: 1;
-                        $cx = 150; $cy = 120; $r = 100;
-                        $palette = ['#C14444','#A19E94','#C1BAA2','#7A6E4E','#8F8C83','#ADA692','#D6D7D1'];
+                        $cx = 120; $cy = 100; $r = 80;
+                        // Paleta intuitiva: rojos y naranjas para egresos
+                        $palette = ['#dc3545','#fd7e14','#ffc107','#e83e8c','#6f42c1','#17a2b8','#20c997'];
                     ?>
-                    <svg width="320" height="260" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="280" height="220" xmlns="http://www.w3.org/2000/svg">
                         <rect x="0" y="0" width="100%" height="100%" fill="#ffffff" />
                         <circle cx="<?php echo $cx;?>" cy="<?php echo $cy;?>" r="<?php echo $r;?>" fill="#f7f7f7" stroke="#e0e0e0" />
                         <?php
@@ -360,27 +362,27 @@
                             foreach($data as $label => $value) {
                                 $percentage = $value / $total;
                                 $endAngle = $startAngle + ($percentage * 360);
-                                
+
                                 // Convertir ángulos a radianes
                                 $startRad = deg2rad($startAngle - 90);
                                 $endRad = deg2rad($endAngle - 90);
-                                
+
                                 // Calcular puntos
                                 $x1 = $cx + cos($startRad) * $r;
                                 $y1 = $cy + sin($startRad) * $r;
                                 $x2 = $cx + cos($endRad) * $r;
                                 $y2 = $cy + sin($endRad) * $r;
-                                
+
                                 // Determinar si el arco es mayor a 180 grados
                                 $largeArcFlag = $endAngle - $startAngle > 180 ? 1 : 0;
-                                
+
                                 $color = $palette[$i % count($palette)];
-                                
+
                                 // Crear el path para la sección del pie
                                 $d = "M{$cx},{$cy} L{$x1},{$y1} A{$r},{$r} 0 {$largeArcFlag},1 {$x2},{$y2} Z";
-                                
+
                                 echo "<path d=\"{$d}\" fill=\"{$color}\" stroke=\"white\" stroke-width=\"1\"/>";
-                                
+
                                 $startAngle = $endAngle;
                                 $i++;
                             }
@@ -404,7 +406,7 @@
                         $ing = array_values($ingresosPorFecha);
                         $eg = array_values($egresosPorFecha);
                         // simple line chart svg
-                        $w = 600; $h = 220; $pad = 30; $max = max(max($ing ?: [0]), max($eg ?: [0]), 1);
+                        $w = 500; $h = 200; $pad = 30; $max = max(max($ing ?: [0]), max($eg ?: [0]), 1);
                         if (!function_exists('svg_point')) {
                             function svg_point($i,$v,$count,$w,$h,$pad,$max){
                                 $x = $pad + ($i * (($w - $pad*2)/max(1,$count-1)));
@@ -413,15 +415,15 @@
                             }
                         }
                     ?>
-                    <svg width="620" height="260" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="520" height="240" xmlns="http://www.w3.org/2000/svg">
                         <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
                         <?php $count = count($labels); if($count):
-                            // Leyenda
-                            echo "<rect x='".($w-150)."' y='10' width='12' height='12' fill='#8E805E' />";
+                            // Leyenda con colores intuitivos
+                            echo "<rect x='".($w-150)."' y='10' width='12' height='12' fill='#28a745' />";
                             echo "<text x='".($w-130)."' y='20' font-size='12' fill='#333'>Ingresos</text>";
-                            echo "<rect x='".($w-150)."' y='30' width='12' height='12' fill='#C14444' />";
+                            echo "<rect x='".($w-150)."' y='30' width='12' height='12' fill='#dc3545' />";
                             echo "<text x='".($w-130)."' y='40' font-size='12' fill='#333'>Egresos</text>";
-                            
+
                             // grid lines y valores
                             for($g=0;$g<=4;$g++){
                                 $yy = $pad + ($g * (($h - $pad*2)/4));
@@ -429,39 +431,39 @@
                                 echo "<line x1='".$pad."' y1='".$yy."' x2='".($w-$pad)."' y2='".$yy."' stroke='#eee' />";
                                 echo "<text x='".($pad-5)."' y='".($yy+4)."' font-size='10' text-anchor='end' fill='#666'>$".$val."</text>";
                             }
-                            
-                            // ingresos polyline y puntos
+
+                            // ingresos polyline y puntos con color verde
                             $pointsI = [];
-                            for($i=0;$i<$count;$i++){ 
-                                $p=svg_point($i,$ing[$i] ?? 0,$count,$w,$h,$pad,$max); 
+                            for($i=0;$i<$count;$i++){
+                                $p=svg_point($i,$ing[$i] ?? 0,$count,$w,$h,$pad,$max);
                                 $pointsI[] = implode(',',$p);
-                                
+
                                 // Círculo para cada punto
-                                echo "<circle cx='".$p[0]."' cy='".$p[1]."' r='4' fill='#8E805E' stroke='white' stroke-width='2'/>";
-                                
+                                echo "<circle cx='".$p[0]."' cy='".$p[1]."' r='4' fill='#28a745' stroke='white' stroke-width='2'/>";
+
                                 // Valor sobre el punto
                                 if($ing[$i] > 0) {
-                                    echo "<text x='".$p[0]."' y='".($p[1]-10)."' font-size='10' text-anchor='middle' fill='#8E805E'>$".number_format($ing[$i],0)."</text>";
+                                    echo "<text x='".$p[0]."' y='".($p[1]-10)."' font-size='10' text-anchor='middle' fill='#28a745'>$".number_format($ing[$i],0)."</text>";
                                 }
                             }
-                            echo "<polyline fill='none' stroke='#8E805E' stroke-width='2' points='".implode(' ',$pointsI)."' />";
-                            
-                            // egresos polyline y puntos
+                            echo "<polyline fill='none' stroke='#28a745' stroke-width='2' points='".implode(' ',$pointsI)."' />";
+
+                            // egresos polyline y puntos con color rojo
                             $pointsE = [];
-                            for($i=0;$i<$count;$i++){ 
-                                $p=svg_point($i,$eg[$i] ?? 0,$count,$w,$h,$pad,$max); 
+                            for($i=0;$i<$count;$i++){
+                                $p=svg_point($i,$eg[$i] ?? 0,$count,$w,$h,$pad,$max);
                                 $pointsE[] = implode(',',$p);
-                                
+
                                 // Círculo para cada punto
-                                echo "<circle cx='".$p[0]."' cy='".$p[1]."' r='4' fill='#C14444' stroke='white' stroke-width='2'/>";
-                                
+                                echo "<circle cx='".$p[0]."' cy='".$p[1]."' r='4' fill='#dc3545' stroke='white' stroke-width='2'/>";
+
                                 // Valor sobre el punto
                                 if($eg[$i] > 0) {
-                                    echo "<text x='".$p[0]."' y='".($p[1]+20)."' font-size='10' text-anchor='middle' fill='#C14444'>$".number_format($eg[$i],0)."</text>";
+                                    echo "<text x='".$p[0]."' y='".($p[1]+20)."' font-size='10' text-anchor='middle' fill='#dc3545'>$".number_format($eg[$i],0)."</text>";
                                 }
                             }
-                            echo "<polyline fill='none' stroke='#C14444' stroke-width='2' points='".implode(' ',$pointsE)."' />";
-                            
+                            echo "<polyline fill='none' stroke='#dc3545' stroke-width='2' points='".implode(' ',$pointsE)."' />";
+
                             // labels en eje x
                             for($i=0;$i<$count;$i++){
                                 $p=svg_point($i,0,$count,$w,$h,$pad,$max);
