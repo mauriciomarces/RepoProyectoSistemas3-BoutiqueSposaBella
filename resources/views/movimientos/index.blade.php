@@ -38,7 +38,7 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Desde</label>
-                        <input type="date" name="from" id="filterFrom" class="form-control" value="{{ request('from') ?: $minDate }}">
+                        <input type="date" name="from" id="filterFrom" class="form-control" value="{{ request('from') }}">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Hasta</label>
@@ -226,7 +226,7 @@
     document.getElementById('btn-clear-filters').addEventListener('click', function() {
         document.getElementById('filterTipo').value = '';
         document.getElementById('filterCategoria').value = '';
-        document.getElementById('filterFrom').value = '{{ $minDate }}';
+        document.getElementById('filterFrom').value = '';
         document.getElementById('filterTo').value = '{{ $maxDate }}';
         document.getElementById('btn-apply-filters').click();
     });
