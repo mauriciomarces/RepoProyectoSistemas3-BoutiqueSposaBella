@@ -1,0 +1,68 @@
+@startuml Diagrama de Actividades - Gestión de Empleados
+
+start
+
+:Administrador solicita acceso a gestión de empleados;
+
+:Verificar autenticación;
+if (¿Empleado autenticado?) then (Sí)
+    :Verificar rol administrador;
+    if (¿Es administrador?) then (Sí)
+        :Mostrar menú de gestión de empleados;
+
+        if (¿Qué acción desea realizar?) then (Listar Empleados)
+            :Consultar todos los empleados en BD;
+            :Mostrar lista de empleados;
+            :Fin del proceso;
+        elseif (Crear Empleado)
+            :Mostrar formulario de creación;
+            :Administrador ingresa datos;
+            :Validar datos del formulario;
+            if (¿Datos válidos?) then (Sí)
+                :Hashear contraseña;
+                :Guardar empleado en BD;
+                :Redirigir a lista con mensaje de éxito;
+            else (No)
+                :Mostrar errores de validación;
+                :Regresar al formulario;
+            endif
+        elseif (Editar Empleado)
+            :Obtener ID del empleado;
+            :Consultar empleado en BD;
+            :Mostrar formulario de edición con datos;
+            :Administrador modifica datos;
+            :Validar cambios;
+            if (¿Cambios válidos?) then (Sí)
+                :Actualizar empleado en BD;
+                :Redirigir a lista con mensaje de éxito;
+            else (No)
+                :Mostrar errores;
+                :Regresar al formulario;
+            endif
+        elseif (Eliminar Empleado)
+            :Obtener ID del empleado;
+            :Verificar que no sea el propio administrador;
+            if (¿No es propio?) then (Sí)
+                :Mostrar confirmación de eliminación;
+                if (¿Confirmar eliminación?) then (Sí)
+                    :Eliminar empleado de BD;
+                    :Redirigir a lista con mensaje de éxito;
+                else (No)
+                    :Regresar a lista;
+                endif
+            else (No)
+                :Mostrar error: no puede eliminarse a sí mismo;
+                :Regresar a lista;
+            endif
+        endif
+    else (No)
+        :Mostrar error de acceso no autorizado;
+        :Redirigir a login;
+    endif
+else (No)
+    :Redirigir a página de login;
+endif
+
+stop
+
+@enduml

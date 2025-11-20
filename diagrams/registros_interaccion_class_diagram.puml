@@ -1,0 +1,78 @@
+@startuml Diagrama de Clases - Registros de Interacción con el Sistema
+
+class RegistroInteraccionController {
+    + index(Request $request): View
+    + show($id): View
+    + export(Request $request): Response
+    + destroyOld($days): RedirectResponse
+    - aplicarFiltros($query, $request): QueryBuilder
+    - verificarPermisos(): bool
+}
+
+class RegistroInteraccion {
+    - ID_registro: int
+    - ID_empleado: int
+    - accion: string
+    - descripcion: string
+    - ip_address: string
+    - user_agent: string
+    - fecha_hora: timestamp
+    - datos_adicionales: json
+    + $table: string
+    + $primaryKey: string
+    + $fillable: array
+    + $casts: array
+    + empleado(): BelongsTo
+    + scopeFiltrarPorFecha($query, $desde, $hasta): QueryBuilder
+    + scopeFiltrarPorUsuario($query, $usuarioId): QueryBuilder
+    + scopeFiltrarPorAccion($query, $accion): QueryBuilder
+}
+
+class Empleado {
+    - ID_empleado: int
+    - nombre: string
+    - correo: string
+    + registrosInteraccion(): HasMany
+}
+
+class Request {
+    + input(string $key): mixed
+    + has(string $key): bool
+    + query(): array
+}
+
+class View {
+    + with(array $data): View
+}
+
+class Response {
+    + download(string $path, string $name): Response
+}
+
+class QueryBuilder {
+    + where(string $column, mixed $value): QueryBuilder
+    + whereBetween(string $column, array $values): QueryBuilder
+    + orderBy(string $column, string $direction): QueryBuilder
+    + paginate(int $perPage): LengthAwarePaginator
+}
+
+RegistroInteraccionController --> RegistroInteraccion : usa
+RegistroInteraccionController --> Request : recibe
+RegistroInteraccionController --> View : retorna
+RegistroInteraccionController --> Response : exporta
+RegistroInteraccionController --> QueryBuilder : filtra
+RegistroInteraccion --> Empleado : pertenece a
+
+note right of RegistroInteraccionController
+    Controlador que maneja la visualización,
+    filtrado y exportación de registros
+    de interacciones del sistema
+end note
+
+note right of RegistroInteraccion
+    Modelo que almacena todas las
+    interacciones de usuarios con
+    detalles completos para auditoría
+end note
+
+@enduml

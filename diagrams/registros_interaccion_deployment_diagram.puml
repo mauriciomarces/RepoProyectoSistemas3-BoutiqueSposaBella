@@ -1,0 +1,55 @@
+@startuml Diagrama de Despliegue - Registros de Interacción con el Sistema
+
+node "Servidor Web" as WebServer {
+    artifact "Laravel Application" as LaravelApp
+    artifact "RegistroInteraccionController.php" as Controller
+    artifact "RegistroInteraccion.php" as Model
+    artifact "Vistas de Registros" as Views
+    artifact "Middleware de Autenticación" as Middleware
+}
+
+node "Servidor de Base de Datos" as DBServer {
+    database "MySQL Database" as MySQL
+    artifact "registros_interaccion" as TableRegistros
+    artifact "empleados" as TableEmpleados
+}
+
+node "Servidor de Logs" as LogServer {
+    artifact "Archivos de Log" as LogFiles
+    artifact "Sistema de Monitoreo" as Monitoring
+}
+
+node "Cliente Web" as Client {
+    artifact "Navegador Web" as Browser
+    artifact "Interfaz de Registros" as Interface
+}
+
+WebServer --> DBServer : Conexión MySQLi
+WebServer --> LogServer : Escritura de Logs
+Client --> WebServer : HTTP/HTTPS
+
+note right of LaravelApp
+    Framework PHP que maneja
+    la lógica de registros, filtros
+    y exportación de datos
+end note
+
+note right of MySQL
+    Almacena registros detallados
+    de todas las interacciones
+    para auditoría y seguimiento
+end note
+
+note right of LogServer
+    Sistema adicional para logs
+    del sistema y monitoreo
+    de rendimiento
+end note
+
+note right of Browser
+    Interfaz para visualización
+    y gestión de registros de
+    interacciones del sistema
+end note
+
+@enduml

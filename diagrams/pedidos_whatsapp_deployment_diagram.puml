@@ -1,0 +1,67 @@
+@startuml Diagrama de Despliegue - Pedidos de Productos por WhatsApp
+
+node "WhatsApp Business API" as WhatsAppAPI {
+    artifact "Webhook Handler" as Webhook
+    artifact "Message Processor" as MessageProcessor
+}
+
+node "Servidor Web" as WebServer {
+    artifact "Laravel Application" as LaravelApp
+    artifact "WhatsAppOrderController.php" as Controller
+    artifact "WhatsAppMessageProcessor.php" as Processor
+    artifact "Vistas de Pedidos WhatsApp" as Views
+}
+
+node "Servidor de Base de Datos" as DBServer {
+    database "MySQL Database" as MySQL
+    artifact "whatsapp_orders" as TableWhatsAppOrders
+    artifact "orders" as TableOrders
+    artifact "products" as TableProducts
+    artifact "clients" as TableClients
+}
+
+node "Cliente WhatsApp" as WhatsAppClient {
+    artifact "Aplicación WhatsApp" as WhatsAppApp
+}
+
+node "Cliente Web" as WebClient {
+    artifact "Navegador Web" as Browser
+    artifact "Panel de Gestión" as AdminPanel
+}
+
+WhatsAppAPI --> WebServer : Webhook HTTP/HTTPS
+WebServer --> DBServer : Conexión MySQLi
+WebClient --> WebServer : HTTP/HTTPS
+WhatsAppClient --> WhatsAppAPI : Mensajes WhatsApp
+
+note right of WhatsAppAPI
+    API de WhatsApp Business para
+    recepción y envío de mensajes
+    con webhooks para notificaciones
+end note
+
+note right of LaravelApp
+    Framework PHP que maneja
+    la lógica de procesamiento de
+    pedidos y gestión de estados
+end note
+
+note right of MySQL
+    Almacena pedidos WhatsApp,
+    pedidos oficiales, productos
+    y datos de clientes
+end note
+
+note right of WhatsAppApp
+    Aplicación móvil de WhatsApp
+    usada por clientes para enviar
+    pedidos y recibir confirmaciones
+end note
+
+note right of Browser
+    Interfaz web para empleados
+    gestionar pedidos WhatsApp
+    pendientes y reportes
+end note
+
+@enduml

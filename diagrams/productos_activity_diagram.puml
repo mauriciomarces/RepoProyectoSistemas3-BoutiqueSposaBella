@@ -1,0 +1,67 @@
+@startuml Diagrama de Actividades - Estado de Productos
+
+start
+
+:Empleado accede a Gestión de Productos;
+
+:Consultar todos los productos con proveedores;
+:Calcular productos agotados (stock = 0);
+:Calcular productos con stock bajo (stock > 0 && stock <= stock_minimo);
+
+if (¿Hay productos agotados?) then (Sí)
+    :Mostrar alerta de productos AGOTADOS;
+endif
+
+if (¿Hay productos con stock bajo?) then (Sí)
+    :Mostrar alerta de stock BAJO;
+else (No)
+    :Mostrar mensaje de inventario en orden;
+endif
+
+:Mostrar lista de productos con indicadores visuales;
+
+if (¿Qué acción desea realizar?) then (Ver Detalles de Estado)
+    :Seleccionar producto;
+    :Mostrar estado actual del stock;
+    :Mostrar stock mínimo configurado;
+    :Mostrar proveedor;
+    :Fin del proceso;
+elseif (Crear Producto)
+    :Mostrar formulario de creación;
+    :Ingresar datos del producto (nombre, stock, stock_minimo, etc.);
+    :Validar datos;
+    if (¿Datos válidos?) then (Sí)
+        :Guardar producto en BD;
+        :Redirigir a lista con mensaje de éxito;
+    else (No)
+        :Mostrar errores de validación;
+        :Regresar al formulario;
+    endif
+elseif (Editar Producto)
+    :Seleccionar producto;
+    :Mostrar formulario de edición con datos actuales;
+    :Modificar datos necesarios (stock, stock_minimo, etc.);
+    :Validar cambios;
+    if (¿Cambios válidos?) then (Sí)
+        :Actualizar producto en BD;
+        :Recalcular estado de inventario;
+        :Redirigir a lista con mensaje de éxito;
+    else (No)
+        :Mostrar errores;
+        :Regresar al formulario;
+    endif
+elseif (Eliminar Producto)
+    :Seleccionar producto;
+    :Mostrar confirmación de eliminación;
+    if (¿Confirmar eliminación?) then (Sí)
+        :Eliminar producto de BD;
+        :Recalcular alertas de inventario;
+        :Redirigir a lista con mensaje de éxito;
+    else (No)
+        :Regresar a lista;
+    endif
+endif
+
+stop
+
+@enduml

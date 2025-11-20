@@ -1,0 +1,43 @@
+@startuml Diagrama de Casos de Uso - Estado de Productos
+
+left to right direction
+
+actor "Empleado" as Empleado
+
+rectangle "Sistema de Control de Estado de Productos" {
+    usecase "Ver Estado de Inventario" as UC1
+    usecase "Ver Alertas de Stock" as UC2
+    usecase "Filtrar Productos por Estado" as UC3
+    usecase "Ver Detalles de Producto" as UC4
+    usecase "Generar Reporte de Inventario" as UC5
+    usecase "Actualizar Stock de Producto" as UC6
+}
+
+Empleado --> UC1
+Empleado --> UC2
+Empleado --> UC3
+UC1 --> UC4
+UC1 --> UC5
+UC5 --> UC3
+
+note right of UC1
+    Muestra resumen general del
+    inventario con conteos por estado
+end note
+
+note right of UC2
+    Visualiza alertas de productos
+    agotados y con stock bajo
+end note
+
+note right of UC3
+    Permite filtrar productos por
+    estado: normal, bajo, agotado
+end note
+
+note right of UC6
+    Actualiza niveles de stock
+    y stock mínimo de productos
+end note
+
+@enduml

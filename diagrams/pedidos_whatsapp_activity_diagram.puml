@@ -1,0 +1,64 @@
+@startuml Diagrama de Actividades - Pedidos de Productos por WhatsApp
+
+start
+
+:Cliente envía mensaje por WhatsApp con pedido;
+
+:WhatsApp API recibe el mensaje;
+
+:API envía webhook a nuestro sistema;
+
+:Sistema procesa el mensaje entrante;
+
+:Extraer información del mensaje (productos, cantidades, datos cliente);
+
+if (¿Mensaje válido?) then (Sí)
+    :Buscar cliente por número de teléfono;
+    if (¿Cliente existe?) then (Sí)
+        :Cliente encontrado;
+    else (No)
+        :Crear cliente nuevo con datos disponibles;
+    endif
+
+    :Verificar disponibilidad de productos;
+    if (¿Todos los productos disponibles?) then (Sí)
+        :Crear pedido WhatsApp en estado 'procesando';
+        :Generar pedido oficial en el sistema;
+        :Actualizar stock de productos;
+        :Enviar mensaje de confirmación por WhatsApp;
+        :Marcar pedido como confirmado;
+    else (No)
+        :Enviar mensaje solicitando corrección o productos alternativos;
+        :Marcar pedido como 'pendiente_correccion';
+    endif
+else (No)
+    :Enviar mensaje de error explicando formato correcto;
+    :Marcar mensaje como 'error_formato';
+endif
+
+:Registrar interacción en logs del sistema;
+
+== Gestión por Empleado ==
+
+:Empleado accede a panel de pedidos WhatsApp;
+
+:Ver pedidos pendientes de confirmación;
+
+if (¿Hay pedidos pendientes?) then (Sí)
+    :Revisar detalles del pedido;
+    if (¿Pedido correcto?) then (Sí)
+        :Confirmar pedido manualmente;
+        :Enviar confirmación al cliente;
+    else (No)
+        :Solicitar corrección al cliente;
+        :Actualizar estado del pedido;
+    endif
+else (No)
+    :No hay pedidos pendientes;
+endif
+
+:Generar reportes de pedidos por WhatsApp;
+
+stop
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml Diagrama de Despliegue - Estado de Productos
+
+node "Servidor Web" as WebServer {
+    artifact "Laravel Application" as LaravelApp
+    artifact "ProductoController.php" as Controller
+    artifact "Producto.php" as Model
+    artifact "Vistas de Productos" as Views
+    artifact "Routes/web.php" as Routes
+}
+
+node "Servidor de Base de Datos" as DBServer {
+    database "MySQL Database" as MySQL
+    artifact "producto" as TableProducto
+    artifact "proveedor" as TableProveedor
+}
+
+node "Cliente Web" as Client {
+    artifact "Navegador Web" as Browser
+    artifact "Formularios HTML" as Forms
+    artifact "JavaScript" as JS
+}
+
+WebServer --> DBServer : Conexión MySQLi
+Client --> WebServer : HTTP/HTTPS
+
+note right of LaravelApp
+    Framework PHP que maneja
+    la lógica de negocio, validaciones
+    y cálculo de estados de inventario
+end note
+
+note right of MySQL
+    Almacena datos de productos,
+    proveedores e imágenes en blob
+end note
+
+note right of Browser
+    Interfaz de usuario para
+    gestión de productos con
+    indicadores visuales de stock
+end note
+
+note right of Routes
+    Define rutas protegidas para
+    gestión de productos con
+    middleware de autenticación
+end note
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml Diagrama de Casos de Uso - Estado de Productos
+
+left to right direction
+
+actor "Empleado" as Empleado
+
+rectangle "Sistema de Gestión de Estado de Productos" {
+    usecase "Listar Productos con Estados" as UC1
+    usecase "Ver Alertas de Inventario" as UC2
+    usecase "Crear Producto" as UC3
+    usecase "Editar Producto" as UC4
+    usecase "Eliminar Producto" as UC5
+    usecase "Ver Detalles de Estado de Stock" as UC6
+    usecase "Configurar Stock Mínimo" as UC7
+    usecase "Subir Imagen de Producto" as UC8
+}
+
+Empleado --> UC1
+Empleado --> UC2
+Empleado --> UC3
+Empleado --> UC4
+Empleado --> UC5
+UC1 --> UC6
+UC3 --> UC7
+UC3 --> UC8
+UC4 --> UC7
+UC4 --> UC8
+
+note right of UC1
+    Muestra lista de productos con
+    indicadores visuales de stock
+    (normal, bajo, agotado)
+end note
+
+note right of UC2
+    Visualiza alertas automáticas
+    de productos agotados y con
+    stock bajo
+end note
+
+note right of UC6
+    Consulta estado detallado del
+    stock, stock mínimo y proveedor
+    de un producto específico
+end note
+
+note right of UC7
+    Configura nivel de stock mínimo
+    para generar alertas de reposición
+end note
+
+@enduml
