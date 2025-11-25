@@ -10,7 +10,7 @@ class AuthController extends Controller
     // ==========================================
     // LOGIN DE CLIENTES (Sitio Web Público)
     // ==========================================
-    
+
     public function showLoginCliente() {
         // El login de clientes ya no está disponible; redirigimos al login de empleados
         return redirect()->route('empleado.login');
@@ -30,7 +30,7 @@ class AuthController extends Controller
     // ==========================================
     // LOGIN DE EMPLEADOS (Sistema Administrativo)
     // ==========================================
-    
+
     public function showLoginEmpleado() {
         return view('auth.login_empleado');
     }
@@ -72,6 +72,17 @@ class AuthController extends Controller
             'empleado_rol_nombre' => $empleado->cargo,
             'empleado_permisos' => $empleado->permisos,
             'tipo_usuario' => 'empleado'
+        ]);
+
+        // Log the login event
+        \App\Models\RegistroInteraccion::create([
+            'empleado_id' => $empleado->ID_empleado,
+            'accion' => 'login',
+            'modulo' => 'auth',
+            'registro_id' => null,
+            'descripcion' => 'Empleado inició sesión',
+            'datos_anteriores' => null,
+            'datos_nuevos' => null,
         ]);
 
         return redirect()->route('clientes.index')->with('success', 'Bienvenida ' . $empleado->nombre . '!');

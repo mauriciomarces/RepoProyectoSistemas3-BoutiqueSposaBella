@@ -34,6 +34,7 @@
                         @endphp
                         @if($isAdmin)
                             <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleados.index') }}">Empleados</a></li>
+                            <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('registros_interaccion.index') }}">Registros de Interacción</a></li>
                         @endif
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('clientes.index') }}">Clientes</a></li>
                         <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('proveedores.index') }}">Proveedores</a></li>
