@@ -1,0 +1,76 @@
+@startuml Diagrama de Clases - Estado de Productos
+
+class ProductoController {
+    + index(): View
+    + create(): View
+    + store(Request $request): RedirectResponse
+    + edit($id): View
+    + update(Request $request, $id): RedirectResponse
+    + destroy($id): RedirectResponse
+    - calcularAlertas($productos): array
+}
+
+class Producto {
+    - ID_producto: int
+    - nombre: string
+    - descripcion: string
+    - descripcion_corta: string
+    - categoria: string
+    - precio: decimal
+    - stock: int
+    - stock_minimo: int
+    - ID_proveedor: int
+    - imagen_blob: blob
+    - imagen_mime: string
+    + $table: string
+    + $primaryKey: string
+    + $fillable: array
+    + proveedor(): BelongsTo
+    + getImagenDataAttribute(): string
+    + necesitaReposicion(): bool
+    + estaAgotado(): bool
+    + getEstadoStockAttribute(): string
+}
+
+class Proveedor {
+    - ID_proveedor: int
+    - nombre: string
+    + productos(): HasMany
+}
+
+class Request {
+    + validate(array $rules): array
+    + hasFile(string $key): bool
+    + file(string $key): UploadedFile
+}
+
+class View {
+    + with(array $data): View
+}
+
+class RedirectResponse {
+    + with(string $key, mixed $value): RedirectResponse
+    + route(string $route): RedirectResponse
+}
+
+ProductoController --> Producto : usa
+ProductoController --> Request : valida
+ProductoController --> View : retorna
+ProductoController --> RedirectResponse : redirige
+Producto --> Proveedor : pertenece a
+
+note right of Producto
+    Modelo con métodos para
+    controlar estado de inventario:
+    - necesitaReposicion()
+    - estaAgotado()
+    - getEstadoStockAttribute()
+end note
+
+note right of ProductoController
+    Controlador que calcula alertas
+    de inventario y maneja CRUD
+    de productos
+end note
+
+@enduml

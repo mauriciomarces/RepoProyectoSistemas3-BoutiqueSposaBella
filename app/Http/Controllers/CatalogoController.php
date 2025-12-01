@@ -24,11 +24,12 @@ class CatalogoController extends Controller
             }
         }
 
-        $productos = $query->get();
+        // Paginate the products, 12 per page
+        $paginatedProductos = $query->paginate(12)->appends($request->except('page'));
 
         $sections = [];
 
-        foreach ($productos as $prod) {
+        foreach ($paginatedProductos as $prod) {
             $descripcion = $prod->descripcion ?? '';
             $productoArray = [
                 'id' => $prod->ID_producto,
@@ -52,9 +53,15 @@ class CatalogoController extends Controller
         ksort($sections);
 
         if ($request->ajax()) {
-            return view('catalogo-partial', compact('sections'))->render();
+            return view('catalogo-partial', [
+                'sections' => $sections,
+                'paginatedProductos' => $paginatedProductos,
+            ])->render();
         }
 
-        return view('catalogo', compact('sections'));
+        return view('catalogo', [
+            'sections' => $sections,
+            'paginatedProductos' => $paginatedProductos,
+        ]);
     }
 }

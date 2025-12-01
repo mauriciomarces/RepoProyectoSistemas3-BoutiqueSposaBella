@@ -1,0 +1,46 @@
+@startuml Diagrama de Actividades - Registros de Interacción con el Sistema
+
+start
+
+:Empleado accede a Registros de Interacción;
+
+:Verificar permisos de acceso;
+if (¿Tiene permisos?) then (Sí)
+    :Mostrar interfaz de registros;
+
+    if (¿Aplicar filtros?) then (Sí)
+        :Seleccionar filtros (fecha, usuario, acción);
+        :Aplicar filtros a la consulta;
+    endif
+
+    :Consultar registros en BD;
+    :Mostrar lista de registros;
+
+    if (¿Qué acción desea realizar?) then (Ver Detalles)
+        :Seleccionar registro específico;
+        :Mostrar detalles completos del registro;
+        :Fin del proceso;
+    elseif (Exportar Reporte)
+        :Seleccionar formato (PDF/CSV);
+        :Seleccionar rango de fechas;
+        :Generar archivo de reporte;
+        :Descargar archivo;
+        :Fin del proceso;
+    elseif (Eliminar Registros Antiguos)
+        :Especificar días de antigüedad;
+        :Confirmar eliminación;
+        if (¿Confirmar?) then (Sí)
+            :Eliminar registros antiguos;
+            :Mostrar mensaje de éxito;
+        else (No)
+            :Regresar a lista;
+        endif
+    endif
+else (No)
+    :Mostrar mensaje de acceso denegado;
+    :Redirigir a página principal;
+endif
+
+stop
+
+@enduml

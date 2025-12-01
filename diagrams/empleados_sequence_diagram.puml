@@ -1,0 +1,132 @@
+@startuml Diagrama de Secuencia - Gestión de Empleados
+
+actor "Administrador" as Admin
+participant "EmpleadoController" as Controller
+participant "Request" as Request
+participant "Empleado" as Model
+participant "View" as View
+participant "RedirectResponse" as Redirect
+
+== Crear Empleado ==
+Admin -> Controller: store(Request $request)
+activate Controller
+
+Controller -> Controller: verificarAutenticacion()
+Controller -> Controller: verificarAdministrador()
+
+Controller -> Request: validate(rules)
+activate Request
+Request --> Controller: datos validados
+deactivate Request
+
+Controller -> Model: create($data)
+activate Model
+Model --> Controller: empleado creado
+deactivate Model
+
+Controller -> Redirect: route('empleados.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Admin: Redirección con mensaje de éxito
+deactivate Controller
+
+== Listar Empleados ==
+Admin -> Controller: index()
+activate Controller
+
+Controller -> Controller: verificarAutenticacion()
+Controller -> Controller: verificarAdministrador()
+
+Controller -> Model: all()
+activate Model
+Model --> Controller: lista de empleados
+deactivate Model
+
+Controller -> View: view('empleados.index', compact('empleados'))
+activate View
+View --> Controller: vista renderizada
+deactivate View
+
+Controller --> Admin: Vista con lista de empleados
+deactivate Controller
+
+== Editar Empleado ==
+Admin -> Controller: edit($id)
+activate Controller
+
+Controller -> Controller: verificarAutenticacion()
+Controller -> Controller: verificarAdministrador()
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: empleado encontrado
+deactivate Model
+
+Controller -> View: view('empleados.edit', compact('empleado'))
+activate View
+View --> Controller: vista renderizada
+deactivate View
+
+Controller --> Admin: Formulario de edición
+deactivate Controller
+
+== Actualizar Empleado ==
+Admin -> Controller: update(Request $request, $id)
+activate Controller
+
+Controller -> Controller: verificarAutenticacion()
+Controller -> Controller: verificarAdministrador()
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: empleado encontrado
+deactivate Model
+
+Controller -> Request: validate(rules)
+activate Request
+Request --> Controller: datos validados
+deactivate Request
+
+Controller -> Model: update($data)
+activate Model
+Model --> Controller: empleado actualizado
+deactivate Model
+
+Controller -> Redirect: route('empleados.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Admin: Redirección con mensaje de éxito
+deactivate Controller
+
+== Eliminar Empleado ==
+Admin -> Controller: destroy($id)
+activate Controller
+
+Controller -> Controller: verificarAutenticacion()
+Controller -> Controller: verificarAdministrador()
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: empleado encontrado
+deactivate Model
+
+Controller -> Controller: verificarNoEsPropio($id)
+
+Controller -> Model: delete()
+activate Model
+Model --> Controller: empleado eliminado
+deactivate Model
+
+Controller -> Redirect: route('empleados.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Admin: Redirección con mensaje de éxito
+deactivate Controller
+
+@enduml

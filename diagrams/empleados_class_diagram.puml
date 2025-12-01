@@ -1,0 +1,71 @@
+@startuml Diagrama de Clases - Gestión de Empleados
+
+class EmpleadoController {
+    + index(): View
+    + create(): View
+    + store(Request $request): RedirectResponse
+    + edit($id): View
+    + update(Request $request, $id): RedirectResponse
+    + destroy($id): RedirectResponse
+    - verificarAutenticacion(): bool
+    - verificarAdministrador(): bool
+}
+
+class Empleado {
+    - ID_empleado: int
+    - nombre: string
+    - correo: string
+    - password: string
+    - puesto: string
+    - ID_rol: int
+    - ID_sucursal: int
+    - ID_seccion: int
+    - deleted_at: timestamp
+    + $table: string
+    + $primaryKey: string
+    + $fillable: array
+    + $hidden: array
+    + $dates: array
+    + authenticate(string $correo, string $password): bool
+}
+
+class Request {
+    + validate(array $rules): array
+    + filled(string $key): bool
+    + input(string $key): mixed
+}
+
+class View {
+    + with(array $data): View
+}
+
+class RedirectResponse {
+    + with(string $key, mixed $value): RedirectResponse
+    + route(string $route): RedirectResponse
+}
+
+class DB {
+    + table(string $table): QueryBuilder
+    + select(string $columns): QueryBuilder
+    + where(string $column, mixed $value): QueryBuilder
+    + first(): object
+}
+
+EmpleadoController --> Empleado : usa
+EmpleadoController --> Request : valida
+EmpleadoController --> View : retorna
+EmpleadoController --> RedirectResponse : redirige
+EmpleadoController --> DB : consulta
+
+note right of EmpleadoController
+    Controlador que maneja CRUD
+    de empleados con validaciones
+    de autenticación y rol
+end note
+
+note right of Empleado
+    Modelo que representa a un empleado
+    con autenticación y soft deletes
+end note
+
+@enduml

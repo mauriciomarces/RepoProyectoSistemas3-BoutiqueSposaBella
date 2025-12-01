@@ -1,0 +1,41 @@
+@startuml Diagrama de Casos de Uso - Registros de Interacción con el Sistema
+
+left to right direction
+
+actor "Empleado" as Empleado
+actor "Administrador" as Admin
+
+rectangle "Sistema de Registros de Interacción" {
+    usecase "Ver Registros de Actividad" as UC1
+    usecase "Filtrar Registros por Fecha" as UC2
+    usecase "Filtrar Registros por Usuario" as UC3
+    usecase "Filtrar Registros por Acción" as UC4
+    usecase "Exportar Reporte de Registros" as UC5
+    usecase "Ver Detalles de Registro" as UC6
+    usecase "Eliminar Registros Antiguos" as UC7
+}
+
+Empleado --> UC1
+Empleado --> UC2
+Empleado --> UC3
+Empleado --> UC4
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+
+note right of UC1
+    Visualizar lista de todas las
+    interacciones registradas en el sistema
+end note
+
+note right of UC5
+    Exportar registros a PDF o CSV
+    para auditoría (solo administradores)
+end note
+
+note right of UC7
+    Limpiar registros antiguos para
+    mantener rendimiento (solo administradores)
+end note
+
+@enduml

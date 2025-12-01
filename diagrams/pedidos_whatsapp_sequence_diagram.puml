@@ -1,0 +1,124 @@
+@startuml Diagrama de Secuencia - Pedidos de Productos por WhatsApp
+
+actor "Cliente" as Cliente
+participant "WhatsApp API" as WhatsAppAPI
+participant "WhatsAppOrderController" as Controller
+participant "WhatsAppMessageProcessor" as Processor
+participant "WhatsAppOrder" as WhatsAppOrder
+participant "Product" as Product
+participant "Client" as Client
+participant "Order" as Order
+
+== Recepción de Pedido por WhatsApp ==
+Cliente -> WhatsAppAPI: Envía mensaje con pedido
+activate WhatsAppAPI
+
+WhatsAppAPI -> Controller: processWhatsAppMessage(Request $request)
+activate Controller
+
+Controller -> Processor: procesarMensajeEntrante($message, $phone)
+activate Processor
+
+Processor -> Processor: validarFormatoMensaje($message)
+Processor -> Processor: extraerProductos($message)
+Processor -> Processor: identificarProducto($productName)
+
+Processor --> Controller: datos del pedido procesados
+deactivate Processor
+
+Controller -> Client: findByPhone($phone)
+activate Client
+Client --> Controller: cliente encontrado o null
+deactivate Client
+
+Controller -> WhatsAppOrder: create($orderData)
+activate WhatsAppOrder
+WhatsAppOrder --> Controller: pedido WhatsApp creado
+deactivate WhatsAppOrder
+
+loop Para cada producto solicitado
+    Controller -> Product: find($productId)
+    activate Product
+    Product --> Controller: producto encontrado
+    deactivate Product
+
+    Controller -> Product: checkProductAvailability($productId, $quantity)
+    activate Product
+    Product --> Controller: disponibilidad verificada
+    deactivate Product
+end
+
+Controller -> Controller: validateOrderData($data)
+
+alt Pedido válido
+    Controller -> WhatsAppOrder: confirmarPedido()
+    activate WhatsAppOrder
+    WhatsAppOrder --> Controller: pedido confirmado
+    deactivate WhatsAppOrder
+
+    Controller -> Order: create($confirmedOrderData)
+    activate Order
+    Order --> Controller: pedido oficial creado
+    deactivate Order
+
+    Controller -> Controller: sendConfirmationMessage($orderId)
+    Controller -> WhatsAppAPI: Enviar mensaje de confirmación
+    activate WhatsAppAPI
+    WhatsAppAPI --> Controller: mensaje enviado
+    deactivate WhatsAppAPI
+
+else Pedido inválido
+    Controller -> Controller: sendErrorMessage($errorMessage)
+    Controller -> WhatsAppAPI: Enviar mensaje de error/corrección
+    activate WhatsAppAPI
+    WhatsAppAPI --> Controller: mensaje enviado
+    deactivate WhatsAppAPI
+end
+
+Controller --> WhatsAppAPI: Respuesta JSON
+deactivate Controller
+
+WhatsAppAPI --> Cliente: Mensaje de confirmación/error
+deactivate WhatsAppAPI
+
+== Gestión de Pedidos por Empleado ==
+actor "Empleado" as Empleado
+
+Empleado -> Controller: index(Request $request)
+activate Controller
+
+Controller -> WhatsAppOrder: where('estado', 'pendiente')->get()
+activate WhatsAppOrder
+WhatsAppOrder --> Controller: pedidos pendientes
+deactivate WhatsAppOrder
+
+Controller -> View: view('pedidos-whatsapp.index', compact('pedidos'))
+activate View
+View --> Controller: vista renderizada
+deactivate View
+
+Controller --> Empleado: Vista con pedidos pendientes
+deactivate Controller
+
+Empleado -> Controller: update(Request $request, $id)
+activate Controller
+
+Controller -> WhatsAppOrder: findOrFail($id)
+activate WhatsAppOrder
+WhatsAppOrder --> Controller: pedido encontrado
+deactivate WhatsAppOrder
+
+Controller -> WhatsAppOrder: update($request->all())
+activate WhatsAppOrder
+WhatsAppOrder --> Controller: pedido actualizado
+deactivate WhatsAppOrder
+
+Controller -> Redirect: route('pedidos-whatsapp.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+@enduml

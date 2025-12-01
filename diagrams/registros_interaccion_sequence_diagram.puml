@@ -1,0 +1,102 @@
+@startuml Diagrama de Secuencia - Registros de Interacción con el Sistema
+
+actor "Empleado" as Empleado
+participant "RegistroInteraccionController" as Controller
+participant "RegistroInteraccion" as Model
+participant "Request" as Request
+participant "View" as View
+participant "QueryBuilder" as QueryBuilder
+participant "Response" as Response
+
+== Ver Registros de Interacción ==
+Empleado -> Controller: index(Request $request)
+activate Controller
+
+Controller -> Controller: verificarPermisos()
+
+Controller -> QueryBuilder: new query on RegistroInteraccion
+activate QueryBuilder
+
+Controller -> Controller: aplicarFiltros($queryBuilder, $request)
+Controller -> QueryBuilder: aplicar filtros de fecha/usuario/acción
+
+QueryBuilder -> Model: execute query
+activate Model
+Model --> QueryBuilder: registros filtrados
+deactivate Model
+
+QueryBuilder --> Controller: resultados paginados
+deactivate QueryBuilder
+
+Controller -> View: view('registros.index', compact('registros'))
+activate View
+View --> Controller: vista renderizada
+deactivate View
+
+Controller --> Empleado: Vista con lista de registros
+deactivate Controller
+
+== Ver Detalles de Registro ==
+Empleado -> Controller: show($id)
+activate Controller
+
+Controller -> Controller: verificarPermisos()
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: registro encontrado
+deactivate Model
+
+Controller -> View: view('registros.show', compact('registro'))
+activate View
+View --> Controller: vista de detalles
+deactivate View
+
+Controller --> Empleado: Vista con detalles del registro
+deactivate Controller
+
+== Exportar Registros ==
+Empleado -> Controller: export(Request $request)
+activate Controller
+
+Controller -> Controller: verificarPermisos()
+
+Controller -> QueryBuilder: new query on RegistroInteraccion
+activate QueryBuilder
+
+Controller -> Controller: aplicarFiltros($queryBuilder, $request)
+QueryBuilder -> Model: get all matching records
+activate Model
+Model --> QueryBuilder: todos los registros
+deactivate Model
+
+QueryBuilder --> Controller: colección de registros
+deactivate QueryBuilder
+
+Controller -> Controller: generarArchivo($registros, $formato)
+
+Controller -> Response: download($filePath, $fileName)
+activate Response
+Response --> Controller: respuesta de descarga
+deactivate Response
+
+Controller --> Empleado: Archivo descargado
+deactivate Controller
+
+== Eliminar Registros Antiguos ==
+Empleado -> Controller: destroyOld($days)
+activate Controller
+
+Controller -> Controller: verificarPermisosAdministrador()
+
+Controller -> Model: where('fecha_hora', '<', $fechaLimite)->delete()
+activate Model
+Model --> Controller: registros eliminados
+deactivate Model
+
+Controller -> Controller: logAccion('eliminacion_registros_antiguos')
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+@enduml

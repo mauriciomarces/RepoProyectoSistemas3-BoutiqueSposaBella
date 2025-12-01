@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +13,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Sistema CSS - Paleta Sposa Bella -->
     <link href="{{ asset('css/sistema.css') }}" rel="stylesheet">
+    <style>
+        /* Hide pagination SVG arrows, keep only page numbers */
+        .pagination svg {
+            display: none;
+        }
+    </style>
     @stack('styles')
 </head>
+
 <body>
     <!-- Navbar (paleta personalizada) -->
     <nav class="navbar navbar-expand-lg">
@@ -28,29 +36,30 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @if(session('empleado_id'))
-                        @php
-                            $empleado = DB::table('empleado')->where('ID_empleado', session('empleado_id'))->first();
-                            $isAdmin = $empleado && $empleado->ID_rol == 1;
-                        @endphp
-                        @if($isAdmin)
-                            <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleados.index') }}">Empleados</a></li>
-                        @endif
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('clientes.index') }}">Clientes</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('proveedores.index') }}">Proveedores</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('fletes.index') }}">Fletes</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('confecciones.index') }}">Confecciones</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('movimientos.index') }}">Movimientos</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('analisis.index') }}">Análisis Financiero</a></li>
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('trash.index') }}">Papelera</a></li>
-                        <li class="nav-item">
-                            <form action="{{ route('empleado.logout') }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-auth ms-2" style="background-color: #8E805E; border-color: #8E805E; color: #EDEEE8;">Cerrar sesión</button>
-                            </form>
-                        </li>
+                    @php
+                    $empleado = DB::table('empleado')->where('ID_empleado', session('empleado_id'))->first();
+                    $isAdmin = $empleado && $empleado->ID_rol == 1;
+                    @endphp
+                    @if($isAdmin)
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleados.index') }}">Empleados</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('registros_interaccion.index') }}">Registros de Interacción</a></li>
+                    @endif
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('clientes.index') }}">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('proveedores.index') }}">Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('fletes.index') }}">Fletes</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('confecciones.index') }}">Confecciones</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('movimientos.index') }}">Movimientos</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('analisis.index') }}">Análisis Financiero</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('trash.index') }}">Papelera</a></li>
+                    <li class="nav-item">
+                        <form action="{{ route('empleado.logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-auth ms-2" style="background-color: #8E805E; border-color: #8E805E; color: #EDEEE8;">Cerrar sesión</button>
+                        </form>
+                    </li>
                     @else
-                        <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleado.login') }}">Iniciar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('empleado.login') }}">Iniciar Sesión</a></li>
                     @endif
                 </ul>
             </div>
@@ -68,4 +77,5 @@
     <script src="{{ asset('js/app.js') }}"></script>
     @yield('scripts')
 </body>
+
 </html>

@@ -1,0 +1,51 @@
+@startuml Diagrama de Despliegue - Gestión de Empleados
+
+node "Servidor Web" as WebServer {
+    artifact "Laravel Application" as LaravelApp
+    artifact "EmpleadoController.php" as Controller
+    artifact "Empleado.php" as Model
+    artifact "Vistas de Empleados" as Views
+    artifact "Routes/web.php" as Routes
+}
+
+node "Servidor de Base de Datos" as DBServer {
+    database "MySQL Database" as MySQL
+    artifact "empleado" as TableEmpleado
+    artifact "rol" as TableRol
+    artifact "sucursal" as TableSucursal
+    artifact "seccion" as TableSeccion
+}
+
+node "Cliente Web" as Client {
+    artifact "Navegador Web" as Browser
+    artifact "Formularios HTML" as Forms
+    artifact "JavaScript" as JS
+}
+
+WebServer --> DBServer : Conexión MySQLi
+Client --> WebServer : HTTP/HTTPS
+
+note right of LaravelApp
+    Framework PHP que maneja
+    la lógica de negocio, validaciones
+    y renderizado de vistas
+end note
+
+note right of MySQL
+    Almacena datos de empleados,
+    roles, sucursales y secciones
+end note
+
+note right of Browser
+    Interfaz de usuario para
+    gestión completa de empleados
+    con formularios y validaciones
+end note
+
+note right of Routes
+    Define rutas protegidas para
+    gestión de empleados con
+    middleware de autenticación
+end note
+
+@enduml

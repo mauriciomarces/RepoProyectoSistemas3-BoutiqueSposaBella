@@ -1,0 +1,129 @@
+@startuml Diagrama de Clases - Pedidos de Productos por WhatsApp
+
+class WhatsAppOrderController {
+    + index(Request $request): View
+    + create(): View
+    + store(Request $request): RedirectResponse
+    + show($id): View
+    + edit($id): View
+    + update(Request $request, $id): RedirectResponse
+    + destroy($id): RedirectResponse
+    + processWhatsAppMessage(Request $request): JsonResponse
+    + sendConfirmationMessage($orderId): bool
+    - validateOrderData(array $data): bool
+    - checkProductAvailability($productId, $quantity): bool
+}
+
+class WhatsAppOrder {
+    - ID_pedido_whatsapp: int
+    - numero_telefono: string
+    - mensaje_recibido: text
+    - productos_solicitados: json
+    - estado: string
+    - ID_cliente: int
+    - fecha_pedido: datetime
+    - fecha_procesamiento: datetime
+    + $fillable: array
+    + $table: string
+    + $primaryKey: string
+    + cliente(): BelongsTo
+    + productos(): BelongsToMany
+    + procesarMensaje(): bool
+    + confirmarPedido(): bool
+    + cancelarPedido(): bool
+}
+
+class WhatsAppMessageProcessor {
+    + procesarMensajeEntrante(string $message, string $phone): array
+    + extraerProductos(string $message): array
+    + validarFormatoMensaje(string $message): bool
+    + generarRespuestaAutomatica(array $orderData): string
+    - parsearMensaje(string $message): array
+    - identificarProducto(string $productName): int
+}
+
+class Order {
+    - ID_pedido: int
+    - ID_cliente: int
+    - productos: json
+    - total: decimal
+    - estado: string
+    - fecha_pedido: datetime
+    + $fillable: array
+    + $table: string
+    + cliente(): BelongsTo
+    + productos(): BelongsToMany
+}
+
+class Product {
+    - ID_producto: int
+    - nombre: string
+    - stock: int
+    - precio: decimal
+    + $fillable: array
+    + $table: string
+    + estaAgotado(): bool
+    + necesitaReposicion(): bool
+}
+
+class Client {
+    - ID_cliente: int
+    - nombre: string
+    - telefono: string
+    - email: string
+    + $fillable: array
+    + $table: string
+    + pedidos(): HasMany
+}
+
+class Request {
+    + validate(array $rules): array
+    + all(): array
+    + input(string $key): mixed
+    + hasFile(string $key): bool
+}
+
+class View {
+    + make(string $view, array $data): View
+    + with(string $key, mixed $value): View
+}
+
+class JsonResponse {
+    + json(array $data, int $status): JsonResponse
+}
+
+WhatsAppOrderController --> WhatsAppOrder : gestiona
+WhatsAppOrderController --> WhatsAppMessageProcessor : utiliza
+WhatsAppOrderController --> Order : crea
+WhatsAppOrderController --> Product : verifica
+WhatsAppOrderController --> Client : asocia
+WhatsAppOrderController --> Request : valida
+WhatsAppOrderController --> View : retorna
+WhatsAppOrderController --> JsonResponse : responde
+
+WhatsAppOrder --> Client : pertenece a
+WhatsAppOrder --> Product : solicita
+WhatsAppOrder --> Order : genera
+
+Order --> Client : pertenece a
+Order --> Product : contiene
+
+note right of WhatsAppOrderController
+    Controlador principal que maneja
+    pedidos por WhatsApp y procesamiento
+    de mensajes automáticos
+end note
+
+note right of WhatsAppMessageProcessor
+    Servicio para procesar mensajes
+    de WhatsApp y extraer información
+    de pedidos
+end note
+
+note right of WhatsAppOrder
+    Modelo que representa pedidos
+    recibidos por WhatsApp antes
+    de ser confirmados
+end note
+
+@enduml

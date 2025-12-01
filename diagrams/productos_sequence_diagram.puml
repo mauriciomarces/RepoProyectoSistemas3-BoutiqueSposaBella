@@ -1,0 +1,140 @@
+@startuml Diagrama de Secuencia - Estado de Productos
+
+actor "Empleado" as Empleado
+participant "ProductoController" as Controller
+participant "Producto" as Model
+participant "Proveedor" as ProveedorModel
+participant "View" as View
+participant "Request" as Request
+participant "RedirectResponse" as Redirect
+
+== Listar Productos con Estados ==
+Empleado -> Controller: index()
+activate Controller
+
+Controller -> Model: with('proveedor')->get()
+activate Model
+Model --> Controller: productos con proveedores
+deactivate Model
+
+Controller -> Controller: calcular productos agotados
+Controller -> Controller: calcular productos con stock bajo
+
+Controller -> View: view('productos.index', compact('productos', 'productosAgotados', 'productosBajos'))
+activate View
+View --> Controller: vista renderizada con alertas
+deactivate View
+
+Controller --> Empleado: Vista con lista de productos y estados
+deactivate Controller
+
+== Crear Producto ==
+Empleado -> Controller: create()
+activate Controller
+
+Controller -> ProveedorModel: all()
+activate ProveedorModel
+ProveedorModel --> Controller: lista de proveedores
+deactivate ProveedorModel
+
+Controller -> View: view('productos.create', compact('proveedores', 'categorias'))
+activate View
+View --> Controller: formulario de creación
+deactivate View
+
+Controller --> Empleado: Formulario vacío
+deactivate Controller
+
+Empleado -> Controller: store(Request $request)
+activate Controller
+
+Controller -> Request: validate(rules)
+activate Request
+Request --> Controller: datos validados
+deactivate Request
+
+Controller -> Model: create($data)
+activate Model
+Model --> Controller: producto creado
+deactivate Model
+
+Controller -> Redirect: route('productos.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+== Editar Producto ==
+Empleado -> Controller: edit($id)
+activate Controller
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: producto encontrado
+deactivate Model
+
+Controller -> ProveedorModel: all()
+activate ProveedorModel
+ProveedorModel --> Controller: lista de proveedores
+deactivate ProveedorModel
+
+Controller -> View: view('productos.edit', compact('producto', 'proveedores', 'categorias'))
+activate View
+View --> Controller: formulario de edición
+deactivate View
+
+Controller --> Empleado: Formulario con datos
+deactivate Controller
+
+== Actualizar Producto ==
+Empleado -> Controller: update(Request $request, $id)
+activate Controller
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: producto encontrado
+deactivate Model
+
+Controller -> Request: validate(rules)
+activate Request
+Request --> Controller: datos validados
+deactivate Request
+
+Controller -> Model: update($data)
+activate Model
+Model --> Controller: producto actualizado
+deactivate Model
+
+Controller -> Redirect: route('productos.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+== Eliminar Producto ==
+Empleado -> Controller: destroy($id)
+activate Controller
+
+Controller -> Model: findOrFail($id)
+activate Model
+Model --> Controller: producto encontrado
+deactivate Model
+
+Controller -> Model: delete()
+activate Model
+Model --> Controller: producto eliminado
+deactivate Model
+
+Controller -> Redirect: route('productos.index')->with('success')
+activate Redirect
+Redirect --> Controller: respuesta de redirección
+deactivate Redirect
+
+Controller --> Empleado: Redirección con mensaje de éxito
+deactivate Controller
+
+@enduml

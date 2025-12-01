@@ -1,0 +1,39 @@
+@startuml Diagrama de Casos de Uso - Gestión de Empleados
+
+left to right direction
+
+actor "Administrador" as Admin
+
+rectangle "Sistema de Gestión de Empleados" {
+    usecase "Listar Empleados" as UC1
+    usecase "Crear Empleado" as UC2
+    usecase "Editar Empleado" as UC3
+    usecase "Eliminar Empleado" as UC4
+    usecase "Verificar Autenticación" as UC5
+    usecase "Verificar Rol Administrador" as UC6
+}
+
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+UC1 --> UC5
+UC2 --> UC5
+UC3 --> UC5
+UC4 --> UC5
+UC1 --> UC6
+UC2 --> UC6
+UC3 --> UC6
+UC4 --> UC6
+
+note right of UC5
+    Verificar que el empleado
+    esté autenticado en la sesión
+end note
+
+note right of UC6
+    Verificar que el empleado
+    tenga ID_rol == 1 (Administrador)
+end note
+
+@enduml

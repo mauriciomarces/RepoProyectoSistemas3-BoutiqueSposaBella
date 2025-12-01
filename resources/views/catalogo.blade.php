@@ -84,7 +84,7 @@
 </div>
 
 <div id="productsContainer">
-    @include('catalogo-partial', ['sections' => $sections])
+    @include('catalogo-partial', ['sections' => $sections, 'paginatedProductos' => $paginatedProductos])
 </div>
 </div>
 
@@ -221,6 +221,65 @@ document.addEventListener('DOMContentLoaded', function() {
         filterForm.reset();
         applyFilters();
     });
+});
+    </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const productsContainer = document.getElementById('productsContainer');
+    const filterForm = document.getElementById('filterForm');
+
+    // Helper para decodificar entidades HTML (por si el JSON vino escapado en el atributo)
+    function decodeHtmlEntities(str) {
+        if (!str) return str;
+        const txt = document.createElement('textarea');
+        txt.innerHTML = str;
+        return txt.value;
+    }
+
+    // Esto aplica filtros vía AJAX
+    function applyFilters(page = 1) {
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData);
+        params.set('page', page);
+
+        fetch(`/catalogo?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            productsContainer.innerHTML = html;
+            attachPaginationHandlers(); // Re-attaching after update
+        })
+        .catch(err => console.error('Error al filtrar productos:', err));
+    }
+
+    // Asociación de manejadores a los links de paginación para AJAX
+    function attachPaginationHandlers() {
+        productsContainer.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = new URL(this.href);
+                const page = url.searchParams.get('page') || 1;
+                applyFilters(page);
+            });
+        });
+    }
+
+    // Al enviar el formulario de filtros
+    filterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        applyFilters();
+    });
+
+    // Limpiar filtros
+    document.getElementById('clearFilters').addEventListener('click', function() {
+        filterForm.reset();
+        applyFilters();
+    });
+
+    // Inicial attach pagination handlers
+    attachPaginationHandlers();
 });
 </script>
 

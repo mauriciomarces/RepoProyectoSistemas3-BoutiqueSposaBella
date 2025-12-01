@@ -14,6 +14,7 @@ use App\Http\Controllers\FleteController;
 use App\Http\Controllers\MovimientoFinancieroController;
 use App\Http\Controllers\AnalisisFinancieroController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\RegistroInteraccionController;
 use App\Http\Controllers\TrashController;
 
 
@@ -63,6 +64,12 @@ Route::middleware(['check.employee'])->group(function () {
     Route::get('/empleados/{id}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
     Route::put('/empleados/{id}', [EmpleadoController::class, 'update'])->name('empleados.update');
     Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
+
+    // ============================================
+    // REGISTROS DE INTERACCIÓN (SOLO ADMINISTRADORES)
+    // ============================================
+    Route::get('/registros-interaccion', [RegistroInteraccionController::class, 'index'])->name('registros_interaccion.index');
+    Route::get('/registros-interaccion/print', [RegistroInteraccionController::class, 'printReport'])->name('registros_interaccion.print');
 
     // ============================================
     // PRODUCTOS

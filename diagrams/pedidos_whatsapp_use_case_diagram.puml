@@ -1,0 +1,56 @@
+@startuml Diagrama de Casos de Uso - Pedidos de Productos por WhatsApp
+
+left to right direction
+
+actor "Cliente" as Cliente
+actor "Empleado" as Empleado
+actor "Sistema WhatsApp" as WhatsApp
+
+rectangle "Sistema de Pedidos por WhatsApp" {
+    usecase "Enviar Pedido por WhatsApp" as UC1
+    usecase "Recibir Mensaje de WhatsApp" as UC2
+    usecase "Procesar Pedido Automáticamente" as UC3
+    usecase "Verificar Disponibilidad de Producto" as UC4
+    usecase "Confirmar Pedido" as UC5
+    usecase "Gestionar Pedidos" as UC6
+    usecase "Actualizar Estado del Pedido" as UC7
+    usecase "Enviar Confirmación al Cliente" as UC8
+    usecase "Generar Reporte de Pedidos" as UC9
+}
+
+Cliente --> UC1
+WhatsApp --> UC2
+UC2 --> UC3
+UC3 --> UC4
+UC3 --> UC5
+Empleado --> UC6
+Empleado --> UC7
+UC5 --> UC8
+Empleado --> UC9
+
+note right of UC1
+    Cliente envía mensaje con
+    detalles del pedido por WhatsApp
+end note
+
+note right of UC2
+    API de WhatsApp recibe y
+    procesa el mensaje entrante
+end note
+
+note right of UC3
+    Sistema analiza el mensaje y
+    extrae información del pedido
+end note
+
+note right of UC4
+    Verifica stock y disponibilidad
+    de productos solicitados
+end note
+
+note right of UC5
+    Confirma pedido si todo está OK
+    o solicita corrección si hay errores
+end note
+
+@enduml
