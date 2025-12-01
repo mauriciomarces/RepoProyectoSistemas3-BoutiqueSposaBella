@@ -34,7 +34,9 @@ Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo.in
 // LOGIN DE EMPLEADOS (SISTEMA ADMINISTRATIVO)
 // ============================================
 Route::get('/empleado/login', [AuthController::class, 'showLoginEmpleado'])->name('empleado.login');
-Route::post('/empleado/login', [AuthController::class, 'loginEmpleado'])->name('empleado.login.post');
+Route::post('/empleado/login', [AuthController::class, 'loginEmpleado'])
+    ->middleware('throttle:5,1') // 5 attempts per minute
+    ->name('empleado.login.post');
 
 // ============================================
 // RUTAS PROTEGIDAS (SOLO EMPLEADOS AUTENTICADOS)
@@ -54,7 +56,7 @@ Route::middleware(['check.employee'])->group(function () {
     Route::get('/clientes/{id}/edit', [ClienteController::class, 'edit'])->name('clientes.edit');
     Route::put('/clientes/{id}', [ClienteController::class, 'update'])->name('clientes.update');
     Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
-    
+
     // ============================================
     // EMPLEADOS (SOLO ADMINISTRADORES)
     // ============================================
@@ -112,7 +114,7 @@ Route::middleware(['check.employee'])->group(function () {
     Route::get('/movimientos/print', [MovimientoFinancieroController::class, 'printReport'])->name('movimientos.print');
     Route::get('/movimientos/latest', [MovimientoFinancieroController::class, 'latest'])->name('movimientos.latest');
     Route::get('/movimientos/export/csv', [MovimientoFinancieroController::class, 'exportCsv'])->name('movimientos.export.csv');
-    
+
     // ============================================
     // ANÁLISIS FINANCIERO
     // ============================================

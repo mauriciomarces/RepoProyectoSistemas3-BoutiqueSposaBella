@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\DeviceHelper;
+use App\Models\Empleado;
+use App\Models\RegistroInteraccion;
 
 class AuthController extends Controller
 {
@@ -42,54 +44,103 @@ class AuthController extends Controller
 
     public function loginEmpleado(Request $request)
     {
+        // Enhanced input validation
         $request->validate([
-            'correo' => 'required|email',
-            'password' => 'required|string'
+            'correo' => 'required|email|max:255',
+            'password' => 'required|string|min:1|max:255'
+        ], [
+            'correo.required' => 'El correo electrónico es obligatorio.',
+            'correo.email' => 'Por favor, introduce una dirección de correo válida.',
+            'correo.max' => 'El correo no puede tener más de 255 caracteres.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string' => 'La contraseña debe ser texto.',
+            'password.min' => 'La contraseña debe tener al menos 1 carácter.',
+            'password.max' => 'La contraseña no puede tener más de 255 caracteres.',
         ]);
 
-        // Buscar en tabla empleado con su rol
-        $empleado = DB::table('empleado')
-            ->join('rol', 'empleado.ID_rol', '=', 'rol.ID_rol')
-            ->where('empleado.correo', $request->correo)
-            ->select('empleado.*', 'rol.cargo', 'rol.permisos')
+        // Sanitize email input
+        $correo = filter_var($request->correo, FILTER_SANITIZE_EMAIL);
+
+        // Use Eloquent ORM with eager loading for better security
+        $empleado = Empleado::with('rol')
+            ->where('correo', $correo)
             ->first();
 
+        // Generic error message to prevent user enumeration
+        $genericError = 'Credenciales inválidas. Por favor, verifica tu correo y contraseña.';
+
         if (!$empleado) {
-            return back()->with('error', 'Correo no registrado en el sistema.');
+            // Log failed login attempt - email not found
+            RegistroInteraccion::create([
+                'empleado_id' => null,
+                'ID_dispositivo' => DeviceHelper::getDeviceId(),
+                'accion' => 'login_failed',
+                'modulo' => 'auth',
+                'registro_id' => null,
+                'descripcion' => 'Intento de login fallido: correo no registrado (' . $correo . ')',
+                'datos_anteriores' => null,
+                'datos_nuevos' => ['correo' => $correo, 'ip' => $request->ip()],
+            ]);
+
+            return back()->with('error', $genericError);
         }
 
-        // Verificar contraseña (usa el mismo hash SHA256)
+        // Verify password using SHA256 hash
         $hashedPassword = hash('sha256', $request->password);
 
         if ($empleado->password !== $hashedPassword) {
-            return back()->with('error', 'Contraseña incorrecta.');
+            // Log failed login attempt - wrong password
+            RegistroInteraccion::create([
+                'empleado_id' => $empleado->ID_empleado,
+                'ID_dispositivo' => DeviceHelper::getDeviceId(),
+                'accion' => 'login_failed',
+                'modulo' => 'auth',
+                'registro_id' => null,
+                'descripcion' => 'Intento de login fallido: contraseña incorrecta',
+                'datos_anteriores' => null,
+                'datos_nuevos' => ['correo' => $correo, 'ip' => $request->ip()],
+            ]);
+
+            return back()->with('error', $genericError);
         }
 
-        // Verificar que sea Admin (1), Vendedora (2) o Costurera (3)
+        // Verify role permissions (Admin=1, Vendedora=2, Costurera=3)
         if (!in_array($empleado->ID_rol, [1, 2, 3])) {
+            // Log failed login attempt - insufficient permissions
+            RegistroInteraccion::create([
+                'empleado_id' => $empleado->ID_empleado,
+                'ID_dispositivo' => DeviceHelper::getDeviceId(),
+                'accion' => 'login_failed',
+                'modulo' => 'auth',
+                'registro_id' => null,
+                'descripcion' => 'Intento de login fallido: permisos insuficientes (Rol: ' . $empleado->ID_rol . ')',
+                'datos_anteriores' => null,
+                'datos_nuevos' => ['correo' => $correo, 'rol_id' => $empleado->ID_rol],
+            ]);
+
             return back()->with('error', 'No tienes permisos para acceder al sistema.');
         }
 
-        // Guardar sesión de EMPLEADO
+        // Create employee session
         session([
             'empleado_id' => $empleado->ID_empleado,
             'empleado_nombre' => $empleado->nombre,
             'empleado_rol_id' => $empleado->ID_rol,
-            'empleado_rol_nombre' => $empleado->cargo,
-            'empleado_permisos' => $empleado->permisos,
+            'empleado_rol_nombre' => $empleado->rol->cargo,
+            'empleado_permisos' => $empleado->rol->permisos,
             'tipo_usuario' => 'empleado'
         ]);
 
-        // Log the login event
-        \App\Models\RegistroInteraccion::create([
+        // Log successful login
+        RegistroInteraccion::create([
             'empleado_id' => $empleado->ID_empleado,
             'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'login',
             'modulo' => 'auth',
             'registro_id' => null,
-            'descripcion' => 'Empleado inició sesión',
+            'descripcion' => 'Empleado inició sesión exitosamente',
             'datos_anteriores' => null,
-            'datos_nuevos' => null,
+            'datos_nuevos' => ['ip' => $request->ip()],
         ]);
 
         return redirect()->route('clientes.index')->with('success', 'Bienvenida ' . $empleado->nombre . '!');
