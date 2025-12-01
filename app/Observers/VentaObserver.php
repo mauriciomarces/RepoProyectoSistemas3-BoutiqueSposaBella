@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Venta;
 use App\Models\RegistroInteraccion;
+use App\Helpers\DeviceHelper;
 
 class VentaObserver
 {
@@ -15,6 +16,7 @@ class VentaObserver
         $empleado_id = session('empleado_id');
         RegistroInteraccion::create([
             'empleado_id' => $empleado_id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'create',
             'modulo' => 'venta',
             'registro_id' => $venta->ID_venta,
@@ -36,6 +38,7 @@ class VentaObserver
 
         RegistroInteraccion::create([
             'empleado_id' => $empleado_id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'update',
             'modulo' => 'venta',
             'registro_id' => $venta->ID_venta,
@@ -54,6 +57,7 @@ class VentaObserver
 
         RegistroInteraccion::create([
             'empleado_id' => $empleado_id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'delete',
             'modulo' => 'venta',
             'registro_id' => $venta->ID_venta,

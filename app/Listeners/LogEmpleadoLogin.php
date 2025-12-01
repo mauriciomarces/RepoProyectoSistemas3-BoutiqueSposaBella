@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use Illuminate\Auth\Events\Login;
 use App\Models\RegistroInteraccion;
+use App\Helpers\DeviceHelper;
 
 class LogEmpleadoLogin
 {
@@ -19,6 +20,7 @@ class LogEmpleadoLogin
 
         RegistroInteraccion::create([
             'empleado_id' => $empleado->id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'login',
             'modulo' => 'auth',
             'registro_id' => null,

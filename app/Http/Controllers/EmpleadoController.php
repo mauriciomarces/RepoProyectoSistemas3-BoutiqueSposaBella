@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Empleado;
+use App\Models\Rol;
+use App\Models\Sucursal;
+use App\Models\Seccion;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class EmpleadoController extends Controller
 {
@@ -24,7 +28,7 @@ class EmpleadoController extends Controller
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
         }
 
-        $empleados = Empleado::all();
+        $empleados = Empleado::with(['rol', 'sucursal', 'seccion'])->get();
         return view('empleados.index', compact('empleados'));
     }
 
@@ -44,7 +48,10 @@ class EmpleadoController extends Controller
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
         }
 
-        return view('empleados.create');
+        $roles = Rol::all();
+        $sucursales = Sucursal::all();
+        $secciones = Seccion::all();
+        return view('empleados.create', compact('roles', 'sucursales', 'secciones'));
     }
 
     public function store(Request $request)
@@ -65,19 +72,31 @@ class EmpleadoController extends Controller
 
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'direccion' => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'CI' => 'required|string|max:20|unique:empleado,CI',
+            'puesto' => 'required|string|max:100',
+            'experiencia' => 'nullable|string|max:255',
+            'fecha_contratacion' => 'required|date',
+            'salario' => 'required|numeric|min:0',
             'correo' => 'required|email|unique:empleado,correo',
             'password' => 'required|string|min:8',
-            'puesto' => 'required|string|max:100',
-            'ID_rol' => 'required|integer',
-            'ID_sucursal' => 'required|integer',
-            'ID_seccion' => 'required|integer',
+            'ID_rol' => 'required|exists:rol,ID_rol',
+            'ID_sucursal' => 'required|exists:sucursal,ID_sucursal',
+            'ID_seccion' => 'required|exists:seccion,ID_seccion',
         ]);
 
         Empleado::create([
             'nombre' => $request->nombre,
+            'direccion' => $request->direccion,
+            'telefono' => $request->telefono,
+            'CI' => $request->CI,
+            'puesto' => $request->puesto,
+            'experiencia' => $request->experiencia,
+            'fecha_contratacion' => $request->fecha_contratacion,
+            'salario' => $request->salario,
             'correo' => $request->correo,
             'password' => Hash::make($request->password),
-            'puesto' => $request->puesto,
             'ID_rol' => $request->ID_rol,
             'ID_sucursal' => $request->ID_sucursal,
             'ID_seccion' => $request->ID_seccion,
@@ -103,7 +122,10 @@ class EmpleadoController extends Controller
         }
 
         $empleado = Empleado::findOrFail($id);
-        return view('empleados.edit', compact('empleado'));
+        $roles = Rol::all();
+        $sucursales = Sucursal::all();
+        $secciones = Seccion::all();
+        return view('empleados.edit', compact('empleado', 'roles', 'sucursales', 'secciones'));
     }
 
     public function update(Request $request, $id)
@@ -126,18 +148,30 @@ class EmpleadoController extends Controller
 
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'direccion' => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'CI' => 'required|string|max:20|unique:empleado,CI,' . $id . ',ID_empleado',
+            'puesto' => 'required|string|max:100',
+            'experiencia' => 'nullable|string|max:255',
+            'fecha_contratacion' => 'required|date',
+            'salario' => 'required|numeric|min:0',
             'correo' => 'required|email|unique:empleado,correo,' . $id . ',ID_empleado',
             'password' => 'nullable|string|min:8',
-            'puesto' => 'required|string|max:100',
-            'ID_rol' => 'required|integer',
-            'ID_sucursal' => 'required|integer',
-            'ID_seccion' => 'required|integer',
+            'ID_rol' => 'required|exists:rol,ID_rol',
+            'ID_sucursal' => 'required|exists:sucursal,ID_sucursal',
+            'ID_seccion' => 'required|exists:seccion,ID_seccion',
         ]);
 
         $data = [
             'nombre' => $request->nombre,
-            'correo' => $request->correo,
+            'direccion' => $request->direccion,
+            'telefono' => $request->telefono,
+            'CI' => $request->CI,
             'puesto' => $request->puesto,
+            'experiencia' => $request->experiencia,
+            'fecha_contratacion' => $request->fecha_contratacion,
+            'salario' => $request->salario,
+            'correo' => $request->correo,
             'ID_rol' => $request->ID_rol,
             'ID_sucursal' => $request->ID_sucursal,
             'ID_seccion' => $request->ID_seccion,

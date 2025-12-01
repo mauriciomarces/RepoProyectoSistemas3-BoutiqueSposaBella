@@ -1,0 +1,133 @@
+@startuml Diagrama Completo de Caso de Uso - Aplicación Móvil Boutique Sposa Bella
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Usuario Móvil" as User
+
+rectangle "Aplicación Móvil Boutique Sposa Bella" {
+    usecase "Iniciar Sesión" as UC1
+    usecase "Ver Catálogo de Productos" as UC2
+    usecase "Registrar Movimiento Financiero" as UC3
+    usecase "Ver Análisis Financiero" as UC4
+    usecase "Gestionar Clientes" as UC5
+    usecase "Ver Fletes" as UC6
+    usecase "Ver Confecciones" as UC7
+    usecase "Ver Reportes de Movimientos" as UC8
+
+    usecase "Ver Resumen Financiero" as UC9
+    usecase "Generar Reporte Mensual" as UC10
+    usecase "Ver Gráficos y Tendencias" as UC11
+    usecase "Exportar Reporte PDF Financiero" as UC12
+    usecase "Filtrar Datos por Fecha/Categoría" as UC13
+
+    usecase "Listar Movimientos" as UC14
+    usecase "Crear Movimiento" as UC15
+    usecase "Editar Movimiento" as UC16
+    usecase "Eliminar Movimiento" as UC17
+    usecase "Ver Detalles de Movimiento" as UC18
+    usecase "Filtrar Movimientos por Fecha" as UC19
+    usecase "Generar Reporte PDF Movimientos" as UC20
+    usecase "Validar Datos de Movimiento" as UC21
+
+    usecase "Enviar Pedido por WhatsApp" as UC22
+    usecase "Verificar Disponibilidad de Producto" as UC23
+    usecase "Confirmar Pedido" as UC24
+    usecase "Gestionar Pedidos WhatsApp" as UC25
+    usecase "Actualizar Estado del Pedido" as UC26
+    usecase "Enviar Confirmación al Cliente" as UC27
+    usecase "Generar Reporte de Pedidos" as UC28
+
+    usecase "Ver Estado de Inventario" as UC29
+    usecase "Ver Alertas de Stock" as UC30
+    usecase "Filtrar Productos por Estado" as UC31
+    usecase "Ver Detalles de Producto" as UC32
+    usecase "Generar Reporte de Inventario" as UC33
+    usecase "Actualizar Stock de Producto" as UC34
+
+    usecase "Ver Registros de Actividad" as UC35
+    usecase "Filtrar Registros por Fecha" as UC36
+    usecase "Filtrar Registros por Usuario" as UC37
+    usecase "Filtrar Registros por Acción" as UC38
+    usecase "Exportar Reporte de Registros" as UC39
+    usecase "Ver Detalles de Registro" as UC40
+    usecase "Eliminar Registros Antiguos" as UC41
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+
+User --> UC14
+User --> UC15
+User --> UC16
+User --> UC17
+User --> UC18
+User --> UC19
+User --> UC20
+User --> UC21
+
+User --> UC22
+User --> UC23
+User --> UC24
+User --> UC25
+User --> UC26
+User --> UC27
+User --> UC28
+
+User --> UC29
+User --> UC30
+User --> UC31
+User --> UC32
+User --> UC33
+User --> UC34
+
+User --> UC35
+User --> UC36
+User --> UC37
+User --> UC38
+User --> UC39
+User --> UC40
+User --> UC41
+
+note right of UC1 : Autenticación con credenciales
+note right of UC2 : Navegar productos y catálogo
+note right of UC3 : Registrar ventas, compras, gastos
+note right of UC4 : Ver gráficos y reportes mensuales
+note right of UC5 : Gestionar información de clientes
+note right of UC6 : Ver y gestionar fletes
+note right of UC7 : Ver confecciones disponibles
+note right of UC8 : Generar reportes PDF de movimientos
+
+note right of UC12
+    Exportación especial para reportes financieros
+end note
+
+note right of UC21
+    Validación previa de datos al guardar movimientos
+end note
+
+note right of UC22
+    Realizar pedidos vía Whatsapp móvil integrado
+end note
+
+note right of UC30
+    Alertas importantes sobre stock de productos
+end note
+
+note right of UC41
+    Limpieza y mantenimiento de registros antiguos
+end note
+
+@enduml

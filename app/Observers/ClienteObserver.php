@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Cliente;
 use App\Models\RegistroInteraccion;
+use App\Helpers\DeviceHelper;
 
 class ClienteObserver
 {
@@ -15,6 +16,7 @@ class ClienteObserver
         $empleado_id = session('empleado_id');
         RegistroInteraccion::create([
             'empleado_id' => $empleado_id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'create',
             'modulo' => 'cliente',
             'registro_id' => $cliente->ID_cliente,
@@ -34,6 +36,7 @@ class ClienteObserver
 
         RegistroInteraccion::create([
             'empleado_id' => $empleado_id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'update',
             'modulo' => 'cliente',
             'registro_id' => $cliente->ID_cliente,
@@ -52,6 +55,7 @@ class ClienteObserver
 
         RegistroInteraccion::create([
             'empleado_id' => $empleado_id,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'delete',
             'modulo' => 'cliente',
             'registro_id' => $cliente->ID_cliente,

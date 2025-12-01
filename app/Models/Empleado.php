@@ -17,12 +17,39 @@ class Empleado extends Authenticatable
     public $timestamps = false;
 
     protected $fillable = [
-        'nombre', 'correo', 'password', 'puesto', 'ID_rol', 'ID_sucursal', 'ID_seccion'
+        'nombre',
+        'direccion',
+        'telefono',
+        'CI',
+        'puesto',
+        'experiencia',
+        'fecha_contratacion',
+        'salario',
+        'correo',
+        'password',
+        'ID_sucursal',
+        'ID_rol',
+        'ID_seccion'
     ];
 
     protected $hidden = [
         'password',
     ];
 
-    protected $dates = ['deleted_at'];
+    protected $dates = ['deleted_at', 'fecha_contratacion'];
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'ID_rol');
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'ID_sucursal');
+    }
+
+    public function seccion()
+    {
+        return $this->belongsTo(Seccion::class, 'ID_seccion');
+    }
 }

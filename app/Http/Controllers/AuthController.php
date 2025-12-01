@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\DeviceHelper;
 
 class AuthController extends Controller
 {
@@ -11,17 +12,20 @@ class AuthController extends Controller
     // LOGIN DE CLIENTES (Sitio Web Público)
     // ==========================================
 
-    public function showLoginCliente() {
+    public function showLoginCliente()
+    {
         // El login de clientes ya no está disponible; redirigimos al login de empleados
         return redirect()->route('empleado.login');
     }
 
-    public function loginCliente(Request $request) {
+    public function loginCliente(Request $request)
+    {
         // El login de clientes ya no está activo. Redirigir al login de empleados.
         return redirect()->route('empleado.login')->with('error', 'El acceso mediante login de clientes ya no está disponible.');
     }
 
-    public function logoutCliente() {
+    public function logoutCliente()
+    {
         session()->flush();
         // Redirigir al login de empleados (el antiguo login de clientes ya no existe)
         return redirect()->route('empleado.login')->with('success', 'Has cerrado sesión correctamente.');
@@ -31,11 +35,13 @@ class AuthController extends Controller
     // LOGIN DE EMPLEADOS (Sistema Administrativo)
     // ==========================================
 
-    public function showLoginEmpleado() {
+    public function showLoginEmpleado()
+    {
         return view('auth.login_empleado');
     }
 
-    public function loginEmpleado(Request $request) {
+    public function loginEmpleado(Request $request)
+    {
         $request->validate([
             'correo' => 'required|email',
             'password' => 'required|string'
@@ -77,6 +83,7 @@ class AuthController extends Controller
         // Log the login event
         \App\Models\RegistroInteraccion::create([
             'empleado_id' => $empleado->ID_empleado,
+            'ID_dispositivo' => DeviceHelper::getDeviceId(),
             'accion' => 'login',
             'modulo' => 'auth',
             'registro_id' => null,
@@ -88,7 +95,8 @@ class AuthController extends Controller
         return redirect()->route('clientes.index')->with('success', 'Bienvenida ' . $empleado->nombre . '!');
     }
 
-    public function logoutEmpleado() {
+    public function logoutEmpleado()
+    {
         session()->flush();
         return redirect()->route('empleado.login')->with('success', 'Has cerrado sesión correctamente.')->header('Cache-Control', 'no-cache, no-store, must-revalidate')->header('Pragma', 'no-cache')->header('Expires', '0');
     }

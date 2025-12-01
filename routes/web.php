@@ -69,6 +69,7 @@ Route::middleware(['check.employee'])->group(function () {
     // REGISTROS DE INTERACCIÓN (SOLO ADMINISTRADORES)
     // ============================================
     Route::get('/registros-interaccion', [RegistroInteraccionController::class, 'index'])->name('registros_interaccion.index');
+    Route::get('/registros-interaccion/print', [RegistroInteraccionController::class, 'printReport'])->name('registros_interaccion.print');
 
     // ============================================
     // PRODUCTOS

@@ -40,6 +40,13 @@
             @endforeach
         </div>
     @endforeach
+
+    @if(isset($paginatedProductos))
+    <div class="d-flex justify-content-center mt-4">
+        {{ $paginatedProductos->links() }}
+    </div>
+    @endif
+
 @else
     <div class="alert alert-info">No se encontraron productos con los filtros seleccionados.</div>
 @endif

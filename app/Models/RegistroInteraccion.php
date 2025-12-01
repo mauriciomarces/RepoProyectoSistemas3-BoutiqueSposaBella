@@ -13,6 +13,7 @@ class RegistroInteraccion extends Model
 
     protected $fillable = [
         'empleado_id',
+        'ID_dispositivo',
         'accion',
         'modulo',
         'registro_id',
