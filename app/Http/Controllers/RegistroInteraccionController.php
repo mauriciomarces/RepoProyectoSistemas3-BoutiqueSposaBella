@@ -29,8 +29,8 @@ class RegistroInteraccionController extends Controller
             $query->where('accion', $request->accion);
         }
 
-        if ($request->filled('modulo')) {
-            $query->where('modulo', $request->modulo);
+        if ($request->filled('ID_dispositivo')) {
+            $query->where('ID_dispositivo', $request->ID_dispositivo);
         }
 
         if ($request->filled('fecha_desde')) {
@@ -74,12 +74,15 @@ class RegistroInteraccionController extends Controller
             'trash' => 'Papelera'
         ];
 
+        // Get unique device IDs
+        $dispositivos = RegistroInteraccion::whereNotNull('ID_dispositivo')->distinct()->pluck('ID_dispositivo');
+
         // Get lookup data for foreign keys
         $roles = Rol::all()->keyBy('ID_rol');
         $sucursales = Sucursal::all()->keyBy('ID_sucursal');
         $secciones = Seccion::all()->keyBy('ID_seccion');
 
-        return view('registros_interaccion.index', compact('registros', 'empleados', 'acciones', 'modulos', 'roles', 'sucursales', 'secciones'));
+        return view('registros_interaccion.index', compact('registros', 'empleados', 'acciones', 'modulos', 'dispositivos', 'roles', 'sucursales', 'secciones'));
     }
 
     public function printReport(Request $request)
@@ -100,8 +103,8 @@ class RegistroInteraccionController extends Controller
             $query->where('accion', $request->accion);
         }
 
-        if ($request->filled('modulo')) {
-            $query->where('modulo', $request->modulo);
+        if ($request->filled('ID_dispositivo')) {
+            $query->where('ID_dispositivo', $request->ID_dispositivo);
         }
 
         if ($request->filled('fecha_desde')) {
@@ -145,12 +148,16 @@ class RegistroInteraccionController extends Controller
             'trash' => 'Papelera'
         ];
 
+        // Get unique device IDs
+        $dispositivos = RegistroInteraccion::whereNotNull('ID_dispositivo')->distinct()->pluck('ID_dispositivo');
+
         $data = [
             'registros' => $registros,
             'empleados' => $empleados,
             'acciones' => $acciones,
             'modulos' => $modulos,
-            'filtros' => $request->only(['empleado_id', 'accion', 'modulo', 'fecha_desde', 'fecha_hasta'])
+            'dispositivos' => $dispositivos,
+            'filtros' => $request->only(['empleado_id', 'accion', 'ID_dispositivo', 'fecha_desde', 'fecha_hasta'])
         ];
 
         // Renderizar la vista PDF-friendly en el navegador (limpia, sin barra de navegación)

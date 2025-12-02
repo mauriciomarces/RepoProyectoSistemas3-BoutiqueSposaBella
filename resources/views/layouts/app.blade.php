@@ -49,9 +49,17 @@
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('fletes.index') }}">Fletes</a></li>
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('confecciones.index') }}">Confecciones</a></li>
+                    @if($isAdmin)
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('movimientos.index') }}">Movimientos</a></li>
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('analisis.index') }}">Análisis Financiero</a></li>
+                    @endif
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('trash.index') }}">Papelera</a></li>
+                    <li class="nav-item d-flex align-items-center">
+                        <span class="nav-link text-sposabella fw-bold" style="cursor: default;">
+                            <i class="fas fa-user-circle me-1"></i>
+                            {{ $empleado->nombre }} ({{ $isAdmin ? 'Administrador' : 'Empleado' }})
+                        </span>
+                    </li>
                     <li class="nav-item">
                         <form action="{{ route('empleado.logout') }}" method="POST" class="d-inline">
                             @csrf
