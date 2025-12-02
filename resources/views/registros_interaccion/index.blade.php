@@ -25,11 +25,11 @@
             </div>
 
             <div class="col-auto">
-                <label for="modulo" class="col-form-label">Módulo</label>
-                <select name="modulo" id="modulo" class="form-select">
+                <label for="ID_dispositivo" class="col-form-label">ID Dispositivo</label>
+                <select name="ID_dispositivo" id="ID_dispositivo" class="form-select">
                     <option value="">Todos</option>
-                    @foreach ($modulos as $key => $label)
-                    <option value="{{ $key }}" {{ request('modulo') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                    @foreach ($dispositivos as $dispositivo)
+                    <option value="{{ $dispositivo }}" {{ request('ID_dispositivo') == $dispositivo ? 'selected' : '' }}>{{ $dispositivo }}</option>
                     @endforeach
                 </select>
             </div>
@@ -185,11 +185,11 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="print_modulo" class="form-label">Módulo</label>
-                        <select name="modulo" id="print_modulo" class="form-select">
+                        <label for="print_ID_dispositivo" class="form-label">ID Dispositivo</label>
+                        <select name="ID_dispositivo" id="print_ID_dispositivo" class="form-select">
                             <option value="">Todos</option>
-                            @foreach ($modulos as $key => $label)
-                            <option value="{{ $key }}">{{ $label }}</option>
+                            @foreach ($dispositivos as $dispositivo)
+                            <option value="{{ $dispositivo }}">{{ $dispositivo }}</option>
                             @endforeach
                         </select>
                     </div>

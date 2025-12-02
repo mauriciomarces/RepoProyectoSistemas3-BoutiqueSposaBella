@@ -71,18 +71,21 @@ class AuthController extends Controller
 
         if (!$empleado) {
             // Log failed login attempt - email not found
-            RegistroInteraccion::create([
-                'empleado_id' => null,
-                'ID_dispositivo' => DeviceHelper::getDeviceId(),
-                'accion' => 'login_failed',
-                'modulo' => 'auth',
-                'registro_id' => null,
-                'descripcion' => 'Intento de login fallido: correo no registrado (' . $correo . ')',
-                'datos_anteriores' => null,
-                'datos_nuevos' => ['correo' => $correo, 'ip' => $request->ip()],
-            ]);
+            // Log failed login attempt - email not found
+            // NOTE: Cannot log to database because empleado_id cannot be null.
+            // RegistroInteraccion::create([
+            //     'empleado_id' => null,
+            //     'ID_dispositivo' => DeviceHelper::getDeviceId(),
+            //     'accion' => 'login_failed',
+            //     'modulo' => 'auth',
+            //     'registro_id' => null,
+            //     'descripcion' => 'Intento de login fallido: correo no registrado (' . $correo . ')',
+            //     'datos_anteriores' => null,
+            //     'datos_nuevos' => ['correo' => $correo, 'ip' => $request->ip()],
+            // ]);
+            \Illuminate\Support\Facades\Log::warning('Intento de login fallido: correo no registrado', ['correo' => $correo, 'ip' => $request->ip()]);
 
-            return back()->with('error', $genericError);
+            return back()->with('error', 'Correo no registrado');
         }
 
         // Verify password using SHA256 hash
@@ -143,7 +146,8 @@ class AuthController extends Controller
             'datos_nuevos' => ['ip' => $request->ip()],
         ]);
 
-        return redirect()->route('clientes.index')->with('success', 'Bienvenida ' . $empleado->nombre . '!');
+        $rolNombre = $empleado->ID_rol == 1 ? 'Administrador' : 'Empleado';
+        return redirect()->route('clientes.index')->with('success', 'Bienvenida ' . $empleado->nombre . ' (' . $rolNombre . ')!');
     }
 
     public function logoutEmpleado()
