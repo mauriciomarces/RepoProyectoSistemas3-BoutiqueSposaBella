@@ -132,9 +132,13 @@ Route::middleware(['check.employee'])->group(function () {
     Route::get('/fletes', [FleteController::class, 'index'])->name('fletes.index');
     Route::get('/fletes/create', [FleteController::class, 'create'])->name('fletes.create');
     Route::post('/fletes', [FleteController::class, 'store'])->name('fletes.store');
+    Route::get('/fletes/{id}', [FleteController::class, 'show'])->name('fletes.show');
     Route::get('/fletes/{id}/edit', [FleteController::class, 'edit'])->name('fletes.edit');
     Route::put('/fletes/{id}', [FleteController::class, 'update'])->name('fletes.update');
     Route::delete('/fletes/{id}', [FleteController::class, 'destroy'])->name('fletes.destroy');
+
+    // API para búsqueda de clientes
+    Route::get('/api/clientes/search', [FleteController::class, 'searchClientes'])->name('api.clientes.search');
 
     // ============================================
     // PAPELERA DE RECICLAJE
