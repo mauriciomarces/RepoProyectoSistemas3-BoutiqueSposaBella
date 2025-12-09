@@ -126,6 +126,10 @@ Route::middleware(['check.employee'])->group(function () {
     Route::get('/confecciones', [\App\Http\Controllers\ConfeccionController::class, 'index'])->name('confecciones.index');
     Route::get('/confecciones/create', [\App\Http\Controllers\ConfeccionController::class, 'create'])->name('confecciones.create');
     Route::post('/confecciones', [\App\Http\Controllers\ConfeccionController::class, 'store'])->name('confecciones.store');
+    Route::get('/confecciones/{id}/edit', [\App\Http\Controllers\ConfeccionController::class, 'edit'])->name('confecciones.edit');
+    Route::put('/confecciones/{id}', [\App\Http\Controllers\ConfeccionController::class, 'update'])->name('confecciones.update');
+    Route::get('/confecciones/{id}', [\App\Http\Controllers\ConfeccionController::class, 'show'])->name('confecciones.show');
+    Route::delete('/confecciones/{id}', [\App\Http\Controllers\ConfeccionController::class, 'destroy'])->name('confecciones.destroy');
 
     // ============================================
     // FLETES (Si los usas)
