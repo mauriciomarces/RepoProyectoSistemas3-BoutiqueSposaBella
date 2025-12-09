@@ -1,0 +1,9 @@
+ID_confeccion
+ID_cliente
+tipo_confeccion
+fecha_inicio
+fecha_entrega
+estado
+costo
+medidas
+ID_transaccion

@@ -1,0 +1,10 @@
+Starting Manual Migration...
+Updating data...
+Modifying column...
+ERROR: SQLSTATE[22007]: Invalid datetime format: 1292 Incorrect date value: '0000-00-00' for column `confecciones_db`.`confeccion`.`fecha_entrega` at row 86 (Connection: mysql, SQL: ALTER TABLE confeccion MODIFY ID_transaccion BIGINT UNSIGNED NULL)
+TRACE: #0 C:\xampp\htdocs\RepoProyectoSistemas3-BoutiqueSposaBella\vendor\laravel\framework\src\Illuminate\Database\Connection.php(778): Illuminate\Database\Connection->runQueryCallback('ALTER TABLE con...', Array, Object(Closure))
+#1 C:\xampp\htdocs\RepoProyectoSistemas3-BoutiqueSposaBella\vendor\laravel\framework\src\Illuminate\Database\Connection.php(559): Illuminate\Database\Connection->run('ALTER TABLE con...', Array, Object(Closure))
+#2 C:\xampp\htdocs\RepoProyectoSistemas3-BoutiqueSposaBella\vendor\laravel\framework\src\Illuminate\Database\DatabaseManager.php(489): Illuminate\Database\Connection->statement('ALTER TABLE con...')
+#3 C:\xampp\htdocs\RepoProyectoSistemas3-BoutiqueSposaBella\vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php(363): Illuminate\Database\DatabaseManager->__call('statement', Array)
+#4 C:\xampp\htdocs\RepoProyectoSistemas3-BoutiqueSposaBella\manual_migrate.php(19): Illuminate\Support\Facades\Facade::__callStatic('statement', Array)
+#5 {main}
