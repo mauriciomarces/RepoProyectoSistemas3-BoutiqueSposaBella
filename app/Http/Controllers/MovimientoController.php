@@ -15,19 +15,38 @@ class MovimientoController extends Controller
 
     public function create()
     {
-        return view('movimientos.create');
+        $categorias = [
+            'ventas' => 'Ventas',
+            'confecciones' => 'Confecciones',
+            'gastos_operativos' => 'Gastos Operativos',
+            'salarios' => 'Salarios',
+            'insumos' => 'Insumos',
+            'otros' => 'Otros'
+        ];
+
+        return view('movimientos.create', compact('categorias'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'tipo' => 'required|string|max:50',
-            'descripcion' => 'nullable|string'
+            'categoria' => 'required|string|max:50',
+            'tipo' => 'required|string|in:ingreso,egreso',
+            'monto' => 'nullable|numeric|min:0',
+            'concepto' => 'nullable|string|max:255',
+            'fecha' => 'required|date',
+            'descripcion' => 'nullable|string',
+            'ID_empleado' => 'nullable|exists:empleados,ID_empleado'
         ]);
 
         DB::table('movimientos')->insert([
+            'categoria' => $request->categoria,
             'tipo' => $request->tipo,
+            'monto' => $request->monto ?? 0,
+            'concepto' => $request->concepto ?? null,
+            'fecha' => $request->fecha,
             'descripcion' => $request->descripcion ?? null,
+            'ID_empleado' => $request->ID_empleado ?? null,
             'created_at' => now(),
             'updated_at' => now()
         ]);

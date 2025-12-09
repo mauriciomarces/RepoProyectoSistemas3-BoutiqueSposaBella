@@ -15,7 +15,13 @@ class ClienteController extends Controller
 
         // Filtros
         if ($request->filled('nombre')) {
-            $query->where('nombre', 'like', '%' . $request->nombre . '%');
+            // Dividir el nombre en palabras y buscar cada una
+            $palabras = explode(' ', trim($request->nombre));
+            foreach ($palabras as $palabra) {
+                if (!empty($palabra)) {
+                    $query->where('nombre', 'like', '%' . $palabra . '%');
+                }
+            }
         }
         if ($request->filled('busto') && is_numeric($request->busto)) {
             $query->where('busto', '=', $request->busto);
@@ -64,18 +70,39 @@ class ClienteController extends Controller
                 ->with('restore_id', $existingDeleted->ID_cliente);
         }
 
-        Cliente::create([
-            'nombre' => $request->nombre,
-            'correo' => $request->correo,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion ?? '',
-            'busto' => $request->busto,
-            'cintura' => $request->cintura,
-            'cadera' => $request->cadera,
-            'password' => bcrypt('123456')
-        ]);
+        // Check if client exists in active records
+        $existingActive = Cliente::where('correo', $request->correo)->first();
 
-        return redirect()->route('clientes.index')->with('success', 'Cliente registrado exitosamente');
+        if ($existingActive) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ya existe un cliente activo con este correo electrónico. Por favor, use un correo diferente.');
+        }
+
+        try {
+            Cliente::create([
+                'nombre' => $request->nombre,
+                'correo' => $request->correo,
+                'telefono' => $request->telefono,
+                'direccion' => $request->direccion ?? '',
+                'busto' => $request->busto,
+                'cintura' => $request->cintura,
+                'cadera' => $request->cadera,
+                'password' => bcrypt('123456')
+            ]);
+
+            return redirect()->route('clientes.index')->with('success', 'Cliente registrado exitosamente');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle any other database errors
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al registrar el cliente. Por favor, verifique los datos e intente nuevamente.');
+        } catch (\Exception $e) {
+            // Handle any other unexpected errors
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ocurrió un error inesperado. Por favor, intente nuevamente.');
+        }
     }
 
     public function show($id)
@@ -107,7 +134,7 @@ class ClienteController extends Controller
             ->orderBy('pedido.fecha_pedido', 'desc')
             ->get()
             ->groupBy('ID_pedido')
-            ->map(function($items) {
+            ->map(function ($items) {
                 $firstItem = $items->first();
                 return (object)[
                     'id' => $firstItem->ID_pedido,
@@ -117,7 +144,7 @@ class ClienteController extends Controller
                     'fecha_entrega' => $firstItem->fecha_entrega,
                     'monto_total' => $firstItem->monto ?? 0,
                     'estado_pago' => $firstItem->estado_pago ?? 'pendiente',
-                    'productos' => $items->map(function($item) {
+                    'productos' => $items->map(function ($item) {
                         return (object)[
                             'nombre' => $item->producto_nombre,
                             'cantidad' => $item->cantidad,
@@ -194,17 +221,40 @@ class ClienteController extends Controller
             return redirect()->route('clientes.index')->with('error', 'Cliente no encontrado');
         }
 
-        $cliente->update([
-            'nombre' => $request->nombre,
-            'correo' => $request->correo,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion ?? '',
-            'busto' => $request->busto,
-            'cintura' => $request->cintura,
-            'cadera' => $request->cadera,
-        ]);
+        // Check if email is being changed to one that already exists
+        if ($request->correo !== $cliente->correo) {
+            $existingEmail = Cliente::where('correo', $request->correo)
+                ->where('ID_cliente', '!=', $id)
+                ->first();
 
-        return redirect()->route('clientes.index')->with('success', 'Cliente actualizado exitosamente');
+            if ($existingEmail) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Ya existe otro cliente con este correo electrónico. Por favor, use un correo diferente.');
+            }
+        }
+
+        try {
+            $cliente->update([
+                'nombre' => $request->nombre,
+                'correo' => $request->correo,
+                'telefono' => $request->telefono,
+                'direccion' => $request->direccion ?? '',
+                'busto' => $request->busto,
+                'cintura' => $request->cintura,
+                'cadera' => $request->cadera,
+            ]);
+
+            return redirect()->route('clientes.index')->with('success', 'Cliente actualizado exitosamente');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al actualizar el cliente. Por favor, verifique los datos e intente nuevamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ocurrió un error inesperado. Por favor, intente nuevamente.');
+        }
     }
 
     public function destroy($id)

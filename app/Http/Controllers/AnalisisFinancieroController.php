@@ -41,11 +41,17 @@ class AnalisisFinancieroController extends Controller
                 ->toArray(),
         ];
 
-        $distribucionGastos = collect($categorias['egresos'])->map(function($total, $categoria) {
-            return ['tipo_gasto' => ucfirst(str_replace('_', ' ', $categoria)), 'total' => $total];
-        })->values();
+        // Filtrar solo las categorías que son gastos reales (excluir ventas y otros ingresos)
+        $categoriasGastos = ['confecciones', 'gastos_operativos', 'salarios', 'insumos'];
+        $distribucionGastos = collect($categorias['egresos'])
+            ->filter(function ($total, $categoria) use ($categoriasGastos) {
+                return in_array($categoria, $categoriasGastos);
+            })
+            ->map(function ($total, $categoria) {
+                return ['tipo_gasto' => ucfirst(str_replace('_', ' ', $categoria)), 'total' => $total];
+            })->values();
 
-        $distribucionIngresos = collect($categorias['ingresos'])->map(function($total, $categoria) {
+        $distribucionIngresos = collect($categorias['ingresos'])->map(function ($total, $categoria) {
             return ['categoria' => ucfirst(str_replace('_', ' ', $categoria)), 'total' => $total];
         })->values();
 
@@ -94,11 +100,25 @@ class AnalisisFinancieroController extends Controller
         $ingresosTotalesPeriodo = $ventas;
 
         return view('analisis_financiero.index', compact(
-            'ingresosMes', 'comprasMes', 'gastosMes', 'totalGastos', 'balanceMes',
-            'tendenciaVentas', 'distribucionGastos', 'distribucionIngresos',
-            'costosFijos', 'costosVariables', 'ingresosTotalesPeriodo', 'porcentajeVariable',
-            'ventasNecesariasValor', 'unidadesVendidas', 'unidadesNecesarias', 'ventas', 'categorias',
-            'precioPromedioVenta', 'unidadesParaVentasNecesarias'
+            'ingresosMes',
+            'comprasMes',
+            'gastosMes',
+            'totalGastos',
+            'balanceMes',
+            'tendenciaVentas',
+            'distribucionGastos',
+            'distribucionIngresos',
+            'costosFijos',
+            'costosVariables',
+            'ingresosTotalesPeriodo',
+            'porcentajeVariable',
+            'ventasNecesariasValor',
+            'unidadesVendidas',
+            'unidadesNecesarias',
+            'ventas',
+            'categorias',
+            'precioPromedioVenta',
+            'unidadesParaVentasNecesarias'
         ));
     }
 
@@ -159,21 +179,23 @@ class AnalisisFinancieroController extends Controller
             DB::raw('COUNT(*) as total_transacciones'),
             DB::raw('SUM(monto) as total_ventas')
         )
-        ->where('tipo', 'ingreso')
-        ->where('fecha', '>=', Carbon::now()->subYear())
-        ->groupBy('mes')
-        ->orderBy('mes')
-        ->get();
+            ->where('tipo', 'ingreso')
+            ->where('fecha', '>=', Carbon::now()->subYear())
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->get();
 
-        // Gastos por categoría (últimos 6 meses)
+        // Gastos por categoría (últimos 6 meses) - solo categorías de gastos reales
+        $categoriasGastos = ['confecciones', 'gastos_operativos', 'salarios', 'insumos'];
         $gastosPorCategoria = MovimientoFinanciero::select(
             DB::raw("categoria as tipo_gasto"),
             DB::raw('SUM(monto) as total')
         )
-        ->where('tipo', 'egreso')
-        ->where('fecha', '>=', Carbon::now()->subMonths(6))
-        ->groupBy('categoria')
-        ->get();
+            ->where('tipo', 'egreso')
+            ->whereIn('categoria', $categoriasGastos)
+            ->where('fecha', '>=', Carbon::now()->subMonths(6))
+            ->groupBy('categoria')
+            ->get();
 
         // Comparativa mensual ingresos vs gastos (últimos 6 meses)
         $meses = [];

@@ -62,8 +62,12 @@
                     oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^0+/, '');">
             </div>
             <div class="col-12 d-flex gap-2 mt-2">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
-                <button type="button" class="btn btn-outline-secondary" id="clearFilters">Limpiar</button>
+                <button type="button" class="btn btn-outline-secondary" id="clearFilters">
+                    <i class="fas fa-times me-1"></i>Limpiar Filtros
+                </button>
+                <small class="text-muted align-self-center ms-2">
+                    <i class="fas fa-info-circle me-1"></i>La búsqueda se actualiza automáticamente
+                </small>
             </div>
         </form>
     </div>
@@ -216,6 +220,23 @@
         const detalleModal = new bootstrap.Modal(document.getElementById('detalleClienteModal'));
         const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
         let clienteIdToDelete = null;
+        let searchTimeout = null;
+
+        // Búsqueda en tiempo real con debouncing
+        const nombreInput = filterForm.querySelector('input[name="nombre"]');
+        const bustoInput = filterForm.querySelector('input[name="busto"]');
+        const cinturaInput = filterForm.querySelector('input[name="cintura"]');
+        const caderaInput = filterForm.querySelector('input[name="cadera"]');
+
+        // Agregar evento de input para búsqueda en tiempo real
+        [nombreInput, bustoInput, cinturaInput, caderaInput].forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    applyFilters();
+                }, 500); // Esperar 500ms después de que el usuario deje de escribir
+            });
+        });
 
         // Manejar filtros - Recarga página (método más confiable)
         filterForm.addEventListener('submit', function(e) {

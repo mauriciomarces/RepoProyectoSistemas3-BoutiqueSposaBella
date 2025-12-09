@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo Cliente</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #EDEEE8;
             font-family: 'Playfair Display', serif;
         }
+
         .navbar {
             background-color: #EDEEE8;
             border-bottom: 2px solid #C1BAA2;
             margin-bottom: 2rem;
         }
+
         .card {
             border-color: #C1BAA2;
         }
+
         .btn-primary {
             background-color: #8E805E;
             border-color: #8E805E;
         }
+
         .btn-primary:hover {
             background-color: #A19E94;
             border-color: #A19E94;
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
@@ -40,17 +47,44 @@
     </nav>
 
     <div class="container">
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
         @if(session('warning'))
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                {{ session('warning') }}
-                @if(session('restore_id'))
-                    <br>
-                    <a href="{{ route('trash.restore', ['type' => 'cliente', 'id' => session('restore_id')]) }}" class="btn btn-sm btn-outline-primary mt-2">
-                        <i class="fas fa-undo"></i> Restaurar Cliente
-                    </a>
-                @endif
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('warning') }}
+            @if(session('restore_id'))
+            <br>
+            <a href="{{ route('trash.restore', ['type' => 'cliente', 'id' => session('restore_id')]) }}" class="btn btn-sm btn-outline-primary mt-2">
+                <i class="fas fa-undo"></i> Restaurar Cliente
+            </a>
+            @endif
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <strong>Por favor, corrija los siguientes errores:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         @endif
 
         <div class="card">
@@ -162,4 +196,5 @@
         });
     </script>
 </body>
+
 </html>
