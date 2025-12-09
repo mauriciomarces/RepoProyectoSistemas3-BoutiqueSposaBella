@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class EmpleadoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Verificar si el empleado está autenticado
         if (!session()->has('empleado_id')) {
@@ -22,14 +22,50 @@ class EmpleadoController extends Controller
 
         // Verificar que sea administrador (ID_rol == 1)
         $empleadoId = session('empleado_id');
-        $empleado = \DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
+        $empleado = DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
 
         if (!$empleado || $empleado->ID_rol != 1) {
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
         }
 
-        $empleados = Empleado::with(['rol', 'sucursal', 'seccion'])->get();
-        return view('empleados.index', compact('empleados'));
+        $query = Empleado::with(['rol', 'sucursal', 'seccion']);
+
+        // Filtros
+        if ($request->filled('nombre')) {
+            $query->where('nombre', 'like', '%' . $request->nombre . '%');
+        }
+        if ($request->filled('CI')) {
+            $query->where('CI', 'like', '%' . $request->CI . '%');
+        }
+        if ($request->filled('puesto')) {
+            $query->where('puesto', 'like', '%' . $request->puesto . '%');
+        }
+        if ($request->filled('ID_rol')) {
+            $query->where('ID_rol', $request->ID_rol);
+        }
+
+        // Ordenar y paginar
+        $empleados = $query->orderBy('ID_empleado', 'desc')->get();
+
+        if ($request->ajax()) {
+            return view('empleados.partials.table_rows', compact('empleados'));
+        }
+
+        $roles = Rol::all(); // Para los filtros
+        return view('empleados.index', compact('empleados', 'roles'));
+    }
+
+    public function show($id)
+    {
+        // Verificar si el empleado está autenticado
+        if (!session()->has('empleado_id')) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
+
+        $empleado = Empleado::with(['rol', 'sucursal', 'seccion'])->findOrFail($id);
+
+        // Devolver datos formato JSON para el modal
+        return response()->json($empleado);
     }
 
     public function create()
@@ -42,7 +78,7 @@ class EmpleadoController extends Controller
 
         // Verificar que sea administrador (ID_rol == 1)
         $empleadoId = session('empleado_id');
-        $empleado = \DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
+        $empleado = DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
 
         if (!$empleado || $empleado->ID_rol != 1) {
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
@@ -64,7 +100,7 @@ class EmpleadoController extends Controller
 
         // Verificar que sea administrador (ID_rol == 1)
         $empleadoId = session('empleado_id');
-        $empleado = \DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
+        $empleado = DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
 
         if (!$empleado || $empleado->ID_rol != 1) {
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
@@ -115,7 +151,7 @@ class EmpleadoController extends Controller
 
         // Verificar que sea administrador (ID_rol == 1)
         $empleadoId = session('empleado_id');
-        $empleado = \DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
+        $empleado = DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
 
         if (!$empleado || $empleado->ID_rol != 1) {
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
@@ -138,7 +174,7 @@ class EmpleadoController extends Controller
 
         // Verificar que sea administrador (ID_rol == 1)
         $empleadoId = session('empleado_id');
-        $empleado = \DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
+        $empleado = DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
 
         if (!$empleado || $empleado->ID_rol != 1) {
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');
@@ -150,7 +186,7 @@ class EmpleadoController extends Controller
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
             'telefono' => 'required|string|max:20',
-            'CI' => 'required|string|max:20|unique:empleado,CI,' . $id . ',ID_empleado',
+            'CI' => 'required|digits:8|unique:empleado,CI,' . $id . ',ID_empleado',
             'puesto' => 'required|string|max:100',
             'experiencia' => 'nullable|string|max:255',
             'fecha_contratacion' => 'required|date',
@@ -196,7 +232,7 @@ class EmpleadoController extends Controller
 
         // Verificar que sea administrador (ID_rol == 1)
         $empleadoId = session('empleado_id');
-        $empleado = \DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
+        $empleado = DB::table('empleado')->where('ID_empleado', $empleadoId)->first();
 
         if (!$empleado || $empleado->ID_rol != 1) {
             abort(403, 'Acceso no autorizado. Solo los administradores pueden gestionar empleados.');

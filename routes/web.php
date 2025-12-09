@@ -42,7 +42,9 @@ Route::post('/empleado/login', [AuthController::class, 'loginEmpleado'])
 // RUTAS PROTEGIDAS (SOLO EMPLEADOS AUTENTICADOS)
 // Requiere: Admin, Vendedora o Costurera
 // ============================================
-Route::middleware(['check.employee'])->group(function () {
+use App\Http\Middleware\PreventBackHistory;
+
+Route::middleware(['check.employee', PreventBackHistory::class])->group(function () {
     // Logout de empleado (protegido)
     Route::post('/empleado/logout', [AuthController::class, 'logoutEmpleado'])->name('empleado.logout');
 
@@ -65,6 +67,7 @@ Route::middleware(['check.employee'])->group(function () {
     Route::post('/empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
     Route::get('/empleados/{id}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
     Route::put('/empleados/{id}', [EmpleadoController::class, 'update'])->name('empleados.update');
+    Route::get('/empleados/{id}', [EmpleadoController::class, 'show'])->name('empleados.show');
     Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
 
     // ============================================
