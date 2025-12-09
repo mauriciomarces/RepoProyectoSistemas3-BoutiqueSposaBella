@@ -7,9 +7,36 @@ use App\Models\Proveedor;
 
 class ProveedorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $proveedores = Proveedor::all();
+        $query = Proveedor::query();
+
+        // Filtro por nombre (búsqueda multi-palabra)
+        if ($request->filled('nombre')) {
+            $palabras = explode(' ', trim($request->nombre));
+            foreach ($palabras as $palabra) {
+                if (!empty($palabra)) {
+                    $query->where('nombre', 'like', '%' . $palabra . '%');
+                }
+            }
+        }
+
+        // Filtro por tipo de proveedor
+        if ($request->filled('tipo_proveedor')) {
+            $query->where('tipo_proveedor', 'like', '%' . $request->tipo_proveedor . '%');
+        }
+
+        // Filtro por teléfono
+        if ($request->filled('telefono')) {
+            $query->where('telefono', 'like', '%' . $request->telefono . '%');
+        }
+
+        $proveedores = $query->orderBy('nombre')->get();
+
+        if ($request->ajax()) {
+            return view('proveedores.partials.table_rows', compact('proveedores'))->render();
+        }
+
         return view('proveedores.index', compact('proveedores'));
     }
 
@@ -31,6 +58,12 @@ class ProveedorController extends Controller
 
         return redirect()->route('proveedores.index')
             ->with('success', 'Proveedor creado exitosamente.');
+    }
+
+    public function show($id)
+    {
+        $proveedor = Proveedor::findOrFail($id);
+        return response()->json($proveedor);
     }
 
     public function edit($id)
