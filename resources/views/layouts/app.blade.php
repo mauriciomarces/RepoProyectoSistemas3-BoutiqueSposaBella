@@ -34,69 +34,72 @@
 
     @if(session('empleado_id') && $isAdmin)
     <!-- Sidebar para Administradores -->
-    <button class="sidebar-toggle" onclick="toggleSidebar()">
+    <button class="sidebar-toggle" onclick="toggleSidebarMobile()">
         <i class="fas fa-bars"></i>
     </button>
 
     <div class="sidebar" id="sidebar">
         <!-- Header del Sidebar -->
-        <div class="sidebar-header">
+        <div class="sidebar-header d-flex justify-content-between align-items-center">
             <a class="sidebar-brand" href="{{ route('welcome') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="Sposa Bella" class="sidebar-logo" />
                 <span>Sposa Bella</span>
             </a>
+            <button class="desktop-toggler" onclick="toggleSidebarDesktop()">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
 
         <!-- Navegación -->
         <ul class="sidebar-nav">
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('empleados.index') }}">
-                    <i class="fas fa-users me-2"></i>Empleados
+                    <i class="fas fa-users me-2"></i><span>Empleados</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('registros_interaccion.index') }}">
-                    <i class="fas fa-clipboard-list me-2"></i>Registros de Interacción
+                    <i class="fas fa-clipboard-list me-2"></i><span>Registros de Interacción</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('clientes.index') }}">
-                    <i class="fas fa-user-friends me-2"></i>Clientes
+                    <i class="fas fa-user-friends me-2"></i><span>Clientes</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('proveedores.index') }}">
-                    <i class="fas fa-truck me-2"></i>Proveedores
+                    <i class="fas fa-truck me-2"></i><span>Proveedores</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('productos.index') }}">
-                    <i class="fas fa-box me-2"></i>Productos
+                    <i class="fas fa-box me-2"></i><span>Productos</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('fletes.index') }}">
-                    <i class="fas fa-shipping-fast me-2"></i>Fletes
+                    <i class="fas fa-shipping-fast me-2"></i><span>Fletes</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('confecciones.index') }}">
-                    <i class="fas fa-cut me-2"></i>Confecciones
+                    <i class="fas fa-cut me-2"></i><span>Confecciones</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('movimientos.index') }}">
-                    <i class="fas fa-exchange-alt me-2"></i>Movimientos
+                    <i class="fas fa-exchange-alt me-2"></i><span>Movimientos</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('analisis.index') }}">
-                    <i class="fas fa-chart-line me-2"></i>Análisis Financiero
+                    <i class="fas fa-chart-line me-2"></i><span>Análisis Financiero</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="sidebar-nav-link" href="{{ route('trash.index') }}">
-                    <i class="fas fa-trash me-2"></i>Papelera
+                    <i class="fas fa-trash me-2"></i><span>Papelera</span>
                 </a>
             </li>
         </ul>
@@ -106,21 +109,21 @@
             <div class="sidebar-user-info">
                 <p class="sidebar-user-name">
                     <i class="fas fa-user-circle me-1"></i>
-                    {{ $empleado->nombre }}
+                    <span>{{ $empleado->nombre }}</span>
                 </p>
-                <p class="sidebar-user-role">Administrador</p>
+                <p class="sidebar-user-role"><span>Administrador</span></p>
             </div>
             <form action="{{ route('empleado.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="sidebar-logout-btn">
-                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                    <i class="fas fa-sign-out-alt me-2"></i><span>Cerrar sesión</span>
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Content con margen para sidebar -->
-    <div class="content-with-sidebar">
+    <div class="content-with-sidebar" id="content-wrapper">
         <div class="container mt-4">
             @yield('content')
         </div>
@@ -144,7 +147,7 @@
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('productos.index') }}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('fletes.index') }}">Fletes</a></li>
                     <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('confecciones.index') }}">Confecciones</a></li>
-                    <li class="nav-item"><a class="nav-link text-sposabella" href="{{ route('trash.index') }}">Papelera</a></li>
+
                     <li class="nav-item d-flex align-items-center">
                         <span class="nav-link text-sposabella fw-bold" style="cursor: default;">
                             <i class="fas fa-user-circle me-1"></i>
@@ -177,12 +180,39 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script>
         // Toggle sidebar en móviles
-        function toggleSidebar() {
+        function toggleSidebarMobile() {
             const sidebar = document.getElementById('sidebar');
             if (sidebar) {
                 sidebar.classList.toggle('show');
             }
         }
+
+        // Toggle sidebar en Desktop
+        function toggleSidebarDesktop() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content-wrapper');
+
+            if (sidebar && content) {
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('collapsed');
+
+                // Guardar preferencia
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
+            }
+        }
+
+        // Restaurar estado del sidebar al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content-wrapper');
+
+            if (isCollapsed && sidebar && content && window.innerWidth > 768) {
+                sidebar.classList.add('collapsed');
+                content.classList.add('collapsed');
+            }
+        });
 
         // Cerrar sidebar al hacer click fuera de él en móviles
         document.addEventListener('click', function(event) {

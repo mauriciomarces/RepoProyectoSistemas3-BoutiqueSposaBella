@@ -23,8 +23,8 @@
             <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre', $empleado->nombre) }}" required>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="CI" class="form-label">CI</label>
-            <input type="text" class="form-control" id="CI" name="CI" value="{{ old('CI', $empleado->CI) }}" required>
+            <label for="CI" class="form-label">CI (8 dígitos)</label>
+            <input type="text" class="form-control" id="CI" name="CI" value="{{ old('CI', $empleado->CI) }}" required maxlength="8" pattern="\d{8}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');" title="Debe contener exactamente 8 dígitos numéricos">
         </div>
     </div>
 

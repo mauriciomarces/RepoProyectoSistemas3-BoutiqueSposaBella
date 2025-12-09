@@ -275,3 +275,98 @@ body {
         print-color-adjust: exact;
     }
 }
+
+/* Sidebar Colapsable (Desktop) */
+@media (min-width: 769px) {
+    .sidebar {
+        transition: width 0.3s ease;
+    }
+
+    .sidebar.collapsed {
+        width: 80px;
+    }
+
+    .content-with-sidebar {
+        transition: margin-left 0.3s ease;
+    }
+
+    .content-with-sidebar.collapsed {
+        margin-left: 80px;
+    }
+
+    /* Ocultar textos y elementos anchos al colapsar */
+    .sidebar.collapsed .sidebar-brand span, 
+    .sidebar.collapsed .sidebar-nav-link span,
+    .sidebar.collapsed .sidebar-user-name,
+    .sidebar.collapsed .sidebar-user-role,
+    .sidebar.collapsed .btn-text,
+    .sidebar.collapsed .sidebar-footer form span {
+        display: none;
+    }
+
+    .sidebar.collapsed .sidebar-logo {
+        margin-right: 0;
+        margin: 0 auto;
+    }
+    
+    .sidebar.collapsed .sidebar-brand {
+        justify-content: center;
+    }
+
+    .sidebar.collapsed .sidebar-nav-link {
+        text-align: center;
+        padding: 0.75rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sidebar.collapsed .sidebar-nav-link i {
+        margin-right: 0 !important;
+        font-size: 1.2rem;
+    }
+
+    /* Ajustes footer */
+    .sidebar.collapsed .sidebar-user-info {
+        padding: 0.5rem;
+        text-align: center;
+    }
+    
+    .sidebar.collapsed .sidebar-user-info i {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    
+    .sidebar.collapsed .sidebar-footer {
+        padding: 0.5rem;
+    }
+
+    .sidebar.collapsed .sidebar-logout-btn {
+        padding: 0.5rem;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .sidebar.collapsed .sidebar-logout-btn i {
+        margin: 0 !important;
+    }
+}
+
+/* Botón de colapso en desktop */
+.desktop-toggler {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #8e805e;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 0.5rem;
+}
+
+@media (min-width: 769px) {
+    .desktop-toggler {
+        display: inline-block;
+    }
+}
